@@ -10,6 +10,8 @@
 # TODO change representation into bits not ints/strings
 # TODO Change mutate to use bitflips based on some probability 
 # TODO Implemement separate problem (practice that generalization)
+# TODO Set up .gitignore
+# TODO put main in the bottom into test code
 
 import sys
 import random
@@ -24,7 +26,7 @@ POSSIBLE_CHARACTERS = [' ', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K
             't', 'u', 'v', 'w', 'x', 'y', 'z']
 POPULATION_SIZE = 5
 REPRODUCTION_CUTOFF = .5 # Threshold above which all individuals in the population will reproduce with eachother
-MUTATION_SEVERITY = 1 # A real positive number. On a 1, the normal distribution within 3 standard deviations 
+MUTATION_SEVERITY = .2 # A real positive number. On a 1, the normal distribution within 3 standard deviations 
     # covers the whole of POSSIBLE_CHARACTERS. Higher than one, will truncate the edges of the distribution 
     # (should encounter performance issues for very large numbers, anything n >= 100 should roughly be completely random)
 NUMBER_OF_OFFSPRING = 3
@@ -91,13 +93,6 @@ def mutateLetter(character): # Changes
         newCharacterIndex -= len(POSSIBLE_CHARACTERS) # TODO: Verify that the random float can theoretically transfer mutate to any letter
     return POSSIBLE_CHARACTERS[newCharacterIndex]
 
-
-def crossover(parent1, parent2):
-    assert len(parent1) == len(parent2)
-    splitIndex = random.randrange(len(parent1) + 1)
-    return parent1[:splitIndex] + parent2[splitIndex:len(parent2)]
-
-
 # Test mutateLetter
 # character = 'k'
 # for i in range(10):
@@ -119,10 +114,44 @@ def mutate_reproduction(population):
     for individual in range(POPULATION_SIZE):
         population += [mutate(population[individual]) for iteration in range(NUMBER_OF_OFFSPRING)]
 
+def mutate_population(population):
+    result = []
+    for individual in population:
+        result.append(mutate(individual))
+    return result
+
 def crossover_reproduction(population):
+    # Pick best two
+    # Make new population of their children
+    # Mutate population
     assert population[0] != None and population[1] != None
     population = sortListByFitness(population) #Pick top two, and reproduce with those two
-    return [mutate(crossover(population[0], population[1])) for iteration in range(POPULATION_SIZE)]  
+    temp = crossover(population[0], population[1])
+    temp = mutate_population(temp)
+    return temp  
+
+def crossover_unbiased(population):
+    # Choose random pairs of parents, produce new population of mutated children
+    pass
+
+def crossover_selection(population):
+    # Select randomly from most fit layer of parents, produce new popluation of mutated children
+    # Dependent on REPRODUCTION_CUTOFF (proportion of parents to select from)
+    pass
+
+def select_parents(population):
+    pass
+
+def crossover(parent1, parent2, number_of_offspring = POPULATION_SIZE):
+    assert len(parent1) == len(parent2)
+    splitIndex = random.randrange(len(parent1) + 1)
+    result = []
+    for i in range(number_of_offspring):
+        splitIndex = random.randrange(len(parent1) + 1)
+        result.append(parent1[:splitIndex] + parent2[splitIndex:len(parent2)])
+    return result
+
+ # So, lets try to pick the parents, then produce a new population from them.
 
 def combination_reproduction(population):
     # Crossover Reproduction
@@ -133,10 +162,6 @@ def combination_reproduction(population):
     # Mutation Reproduction (of original population)
     for index in range(POPULATION_SIZE):
         population.append(mutate(population[index]))
-
-    
-
-    
 
 def select_by_fitness(population):
     population = sortListByFitness(population)
@@ -175,14 +200,19 @@ population = []
 # print(population)
 # print(calculateFitnessofArray(population, targetString))
 
+NUMBER_OF_GENERATIONS = 10000
+
 # Mutation Approach
 
+# TODO Create test case that experimentally demonstrates some good values for mutation severity
+
 print("Mutation")
+MUTATION_SEVERITY = .2
 population = generateRandomPopulation(len(targetString), POPULATION_SIZE)
 
 print(population)
 print(calculateFitnessofArray(population, targetString))
-for iteration in range(50000):
+for iteration in range(NUMBER_OF_GENERATIONS):
     mutate_reproduction(population)
     # print(population)
     population = select_by_fitness(population)
@@ -193,24 +223,27 @@ print(calculateFitnessofArray(population, targetString))
 # Crossover approach
 
 print("Crossover")
+MUTATION_SEVERITY = .05
 population = generateRandomPopulation(len(targetString), POPULATION_SIZE)
 
 print(population)
 print(calculateFitnessofArray(population, targetString))
-for iteration in range(50000):
+for iteration in range(NUMBER_OF_GENERATIONS):
     population = crossover_reproduction(population)
 print(population)
 print(calculateFitnessofArray(population, targetString))
 
 
 # Use both crossover and mutation
-print("Combination")
-population = generateRandomPopulation(len(targetString), POPULATION_SIZE)
+# print("Combination")
+# population = generateRandomPopulation(len(targetString), POPULATION_SIZE)
 
-print(population)
-print(calculateFitnessofArray(population, targetString))
-for iteration in range(50000):
-    combination_reproduction(population)
-    population = select_by_fitness(population)
-print(population)
-print(calculateFitnessofArray(population, targetString))
+# print(population)
+# print(calculateFitnessofArray(population, targetString))
+# for iteration in range(NUMBER_OF_GENERATIONS):
+#     combination_reproduction(population)
+#     population = select_by_fitness(population)
+# print(population)
+# print(calculateFitnessofArray(population, targetString))
+
+# print("Select 2 parents, non-overlapping generations")
