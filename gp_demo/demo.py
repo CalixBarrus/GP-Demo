@@ -99,10 +99,9 @@ def mutateLetter(character): # Changes
 #     character = mutateLetter(character)
 #     print(character)
 
-def sortListByFitness(inputList):
-    # Dependent on targetString
-    fitnessArray = calculateFitnessofArray(population, targetString)
-    mergedList = list(map(lambda string, fitness: (string, fitness), population, fitnessArray))
+def sortListByFitness(inputList, targetString):
+    fitnessArray = calculateFitnessofArray(inputList, targetString)
+    mergedList = list(map(lambda string, fitness: (string, fitness), inputList, fitnessArray))
     mergedList.sort(reverse=True, key=(lambda val: val[1]))
     newList = []
     for tuple in mergedList:
@@ -120,12 +119,12 @@ def mutate_population(population):
         result.append(mutate(individual))
     return result
 
-def crossover_reproduction(population):
+def crossover_reproduction(population, targetString):
     # Pick best two
     # Make new population of their children
     # Mutate population
     assert population[0] != None and population[1] != None
-    population = sortListByFitness(population) #Pick top two, and reproduce with those two
+    population = sortListByFitness(population, targetString) #Pick top two, and reproduce with those two
     temp = crossover(population[0], population[1])
     temp = mutate_population(temp)
     return temp  
@@ -163,87 +162,90 @@ def combination_reproduction(population):
     for index in range(POPULATION_SIZE):
         population.append(mutate(population[index]))
 
-def select_by_fitness(population):
-    population = sortListByFitness(population)
+def select_by_fitness(population, targetString):
+    population = sortListByFitness(population, targetString)
     return population[:POPULATION_SIZE]
 
 ###
 # Start of Program
 ###
+def main():
+    if len(sys.argv) != 2:
+        printUsage()
+        sys.exit(2)
 
-if len(sys.argv) != 2:
-    printUsage()
-    sys.exit(2)
+    # print("This is the name of the script: ", sys.argv[0])
+    # print("Number of arguments: ", len(sys.argv))
+    # print("The arguments are: " , str(sys.argv))
+    targetString = sys.argv[1]
 
-# print("This is the name of the script: ", sys.argv[0])
-# print("Number of arguments: ", len(sys.argv))
-# print("The arguments are: " , str(sys.argv))
-targetString = sys.argv[1]
+    population = []    
 
-population = []    
-
-# print(population)
-# fitnessList = calculateFitnessofArray(population, targetString)
-# print(fitnessList)
-
-# Traditional Evolutionary Strategy (ES) approach - see Handbook of Natural Computing p. 627
-
-# print(population)
-# for iteration in range(10):
-#     for index in range(len(population)):
-#         population[index] = mutate(population[index])
-#     print(population)
-
-# print(population)
-# for string in population:
-#     population[population.index(string)] = mutate(string)
-# print(population)
-# print(calculateFitnessofArray(population, targetString))
-
-NUMBER_OF_GENERATIONS = 10000
-
-# Mutation Approach
-
-# TODO Create test case that experimentally demonstrates some good values for mutation severity
-
-print("Mutation")
-MUTATION_SEVERITY = .2
-population = generateRandomPopulation(len(targetString), POPULATION_SIZE)
-
-print(population)
-print(calculateFitnessofArray(population, targetString))
-for iteration in range(NUMBER_OF_GENERATIONS):
-    mutate_reproduction(population)
     # print(population)
-    population = select_by_fitness(population)
+    # fitnessList = calculateFitnessofArray(population, targetString)
+    # print(fitnessList)
+
+    # Traditional Evolutionary Strategy (ES) approach - see Handbook of Natural Computing p. 627
+
     # print(population)
-print(population)
-print(calculateFitnessofArray(population, targetString))
+    # for iteration in range(10):
+    #     for index in range(len(population)):
+    #         population[index] = mutate(population[index])
+    #     print(population)
 
-# Crossover approach
+    # print(population)
+    # for string in population:
+    #     population[population.index(string)] = mutate(string)
+    # print(population)
+    # print(calculateFitnessofArray(population, targetString))
 
-print("Crossover")
-MUTATION_SEVERITY = .05
-population = generateRandomPopulation(len(targetString), POPULATION_SIZE)
+    NUMBER_OF_GENERATIONS = 10000
 
-print(population)
-print(calculateFitnessofArray(population, targetString))
-for iteration in range(NUMBER_OF_GENERATIONS):
-    population = crossover_reproduction(population)
-print(population)
-print(calculateFitnessofArray(population, targetString))
+    # Mutation Approach
+
+    # TODO Create test case that experimentally demonstrates some good values for mutation severity
+
+    print("Mutation")
+    MUTATION_SEVERITY = .2
+    population = generateRandomPopulation(len(targetString), POPULATION_SIZE)
+
+    print(population)
+    print(calculateFitnessofArray(population, targetString))
+    for iteration in range(NUMBER_OF_GENERATIONS):
+        mutate_reproduction(population)
+        # print(population)
+        population = select_by_fitness(population, targetString)
+        # print(population)
+    print(population)
+    print(calculateFitnessofArray(population, targetString))
+
+    # Crossover approach
+
+    print("Crossover")
+    MUTATION_SEVERITY = .05
+    population = generateRandomPopulation(len(targetString), POPULATION_SIZE)
+
+    print(population)
+    print(calculateFitnessofArray(population, targetString))
+    for iteration in range(NUMBER_OF_GENERATIONS):
+        population = crossover_reproduction(population, targetString)
+    print(population)
+    print(calculateFitnessofArray(population, targetString))
 
 
-# Use both crossover and mutation
-# print("Combination")
-# population = generateRandomPopulation(len(targetString), POPULATION_SIZE)
+    # Use both crossover and mutation
+    # print("Combination")
+    # population = generateRandomPopulation(len(targetString), POPULATION_SIZE)
 
-# print(population)
-# print(calculateFitnessofArray(population, targetString))
-# for iteration in range(NUMBER_OF_GENERATIONS):
-#     combination_reproduction(population)
-#     population = select_by_fitness(population)
-# print(population)
-# print(calculateFitnessofArray(population, targetString))
+    # print(population)
+    # print(calculateFitnessofArray(population, targetString))
+    # for iteration in range(NUMBER_OF_GENERATIONS):
+    #     combination_reproduction(population)
+    #     population = select_by_fitness(population)
+    # print(population)
+    # print(calculateFitnessofArray(population, targetString))
 
-# print("Select 2 parents, non-overlapping generations")
+    # print("Select 2 parents, non-overlapping generations")
+
+if __name__ == "__main__":
+    main()    
