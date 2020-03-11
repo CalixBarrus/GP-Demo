@@ -11,7 +11,7 @@
 # TODO Change mutate to use bitflips based on some probability 
 # TODO Implemement separate problem (practice that generalization)
 # TODO Set up .gitignore
-# TODO put main in the bottom into test code
+# TODO consider breaking this file into GP-Framework and GP-Demo that runs and displays a spectrum of config settings.
 
 import sys
 import random
@@ -199,11 +199,9 @@ def main():
     # print(population)
     # print(calculateFitnessofArray(population, targetString))
 
-    NUMBER_OF_GENERATIONS = 10000
+    NUMBER_OF_GENERATIONS = 1000
 
     # Mutation Approach
-
-    # TODO Create test case that experimentally demonstrates some good values for mutation severity
 
     print("Mutation")
     MUTATION_SEVERITY = .2

@@ -9,6 +9,5 @@ def test_crossover_demo():
     assert 2 == 1
 
 def test_simple_calculate_fitness():
-    assert calculateFitness("a","a") == 1
-# command to run tests
-# nosetest [filename]
+    assert calculateFitness("a","a") == 52
+
