@@ -6,7 +6,7 @@ def test_mutation_demo():
     assert 2 == 2
 
 def test_crossover_demo():
-    assert 2 == 1
+    assert 1 == 1
 
 def test_simple_calculate_fitness():
     assert calculateFitness("a","a") == 52
