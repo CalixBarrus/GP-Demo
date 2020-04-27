@@ -1,3 +1,9 @@
+###
+# DEPRECATED
+# First attempt at a genetic algorithm. Currently working on the gp_framework.py
+# for attempt #2
+###
+
 ### Goal:
 # Generate random strings -> Using "phenotypic representation" (represent each agent as just a string
 #   as opposed to an int or binary string that is converted into a string) 
@@ -10,7 +16,6 @@
 # TODO change representation into bits not ints/strings
 # TODO Change mutate to use bitflips based on some probability 
 # TODO Implemement separate problem (practice that generalization)
-# TODO Set up .gitignore
 # TODO consider breaking this file into GP-Framework and GP-Demo that runs and displays a spectrum of config settings.
 
 import sys
@@ -26,7 +31,7 @@ POSSIBLE_CHARACTERS = [' ', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K
             't', 'u', 'v', 'w', 'x', 'y', 'z']
 POPULATION_SIZE = 5
 REPRODUCTION_CUTOFF = .5 # Threshold above which all individuals in the population will reproduce with eachother
-MUTATION_SEVERITY = .2 # A real positive number. On a 1, the normal distribution within 3 standard deviations 
+MUTATION_SEVERITY = .2 # A real positive number. On a 1, the normal distribution within 3 standard deviations
     # covers the whole of POSSIBLE_CHARACTERS. Higher than one, will truncate the edges of the distribution 
     # (should encounter performance issues for very large numbers, anything n >= 100 should roughly be completely random)
 NUMBER_OF_OFFSPRING = 3
@@ -199,12 +204,12 @@ def main():
     # print(population)
     # print(calculateFitnessofArray(population, targetString))
 
-    NUMBER_OF_GENERATIONS = 1000
+    NUMBER_OF_GENERATIONS = 5000
 
     # Mutation Approach
 
     print("Mutation")
-    MUTATION_SEVERITY = .2
+
     population = generateRandomPopulation(len(targetString), POPULATION_SIZE)
 
     print(population)
