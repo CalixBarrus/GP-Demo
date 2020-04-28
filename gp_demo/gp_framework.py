@@ -34,11 +34,8 @@ def generate_random_genotype(number_of_bytes):
     return bytes(array)
 
 
-# TODO: How can I generalize the representation parameter?
-# I want it to say, number => turn me into a number, parameters[n] => turn me
-# into n numbers,
-# "Factory" design technique?
-# TODO: have each conversion accept empty or null representation_arguments with some default value
+# TODO: Code each conversion function to accept empty or null representation_arguments with some default value
+# TODO: Ask: Is this a valid implementation of the factory design method?
 def convert_to_phenotype(genotype, representation, representation_arguments):
     """
     Function that converts a genotype to the desired representation. The
@@ -65,7 +62,6 @@ def convert_to_phenotype(genotype, representation, representation_arguments):
 
 def _convert_to_string(genotype, arguments):
     """
-    TODO: Is this a valid implementation of the factory design method?
     Private method called by convert_to_phenotype.
     :param genotype: An immutable array of bytes of some predetermined length
     :param arguments: Array; The first argument should be an int for the string
@@ -169,6 +165,12 @@ def calculateFitness(phenotype, application, application_arguments):
 
 
 def _string_match_fitness(phenotype, arguments):
+    """
+
+    :param phenotype:
+    :param arguments:
+    :return:
+    """
     # Assume that the phenotype is a string of the same length as the target_string
     if arguments != None:
         target_string = arguments[0]

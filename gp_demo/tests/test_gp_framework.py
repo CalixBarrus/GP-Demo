@@ -2,6 +2,8 @@ from gp_demo import gp_framework
 
 # Using Test Framework pytest
 
+# TODO: Many of the random generation function should theoretically produce an
+# even distribution of values between some min and max. How can we test for this.
 
 def test_generate_random_genotype_single_byte_range():
     # Stress test to ensure generate_random_genotype() throws no errors
@@ -17,6 +19,7 @@ def test_generate_random_genotype_single_byte_range():
 def test__convert_to_parameters():
     genotype = gp_framework.generate_random_genotype(64)
     arguments = [3]
+    print()
     print(gp_framework._convert_to_parameters(genotype, arguments))
 
 
