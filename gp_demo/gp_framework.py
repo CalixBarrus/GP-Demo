@@ -212,7 +212,45 @@ def _string_match_fitness(phenotype, arguments):
     return fitness
 
 
+def select_parents(population):
+    """
+    Select a group from the population based on the fitness of the individuals.
+    TODO: Implement this using the factory method
 
-# mutate
+    :return:
+    """
+    pass
 
-# crossover
+
+def reproduce(parent):
+    """
+    Returns a mutated copy of the parent
+    TODO: Implement this using the factory method
+
+    :return:
+    """
+    pass
+
+
+def select_survivors(population):
+    """
+    Select a group of individuals to go on to the next generation.
+    TODO: Implement this using the factory method
+
+    :param population:
+    :return:
+    """
+    pass
+
+
+def run_simulation():
+    # TODO: As part of implementing run_simulation, we may want to shuffle all the other conversion, fitness functions, etc. into their own modules.
+    # TODO: Make some kind of config class to pass paramaters to the simulation. The config can include things like genome size, selection methods, reproduction methods, fitness, phenotype representation, etc.
+    # generate population
+
+    # for some number of generations or until some convergence condition is met
+        # select parents from original population
+        # reproduce with those parents
+        # select survivors from original population and offspring
+    # Print results; alternatively, store data from the whole process somehow
+    pass
