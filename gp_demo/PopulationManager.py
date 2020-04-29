@@ -4,17 +4,36 @@ from abc import abstractmethod
 from gp_demo.gp_framework import Genotype, FitnessCalculator
 
 
-class HerdReport:
+class PopulationReport:
     """
     It's a POJO for whatever data we think is good to keep track of from generation to generation
     """
     def __init__(self, max_fitness, min_fitness, mean_fitness):
-        self.max_fitness = max_fitness
-        self.min_fitness = min_fitness
-        self.mean_fitness = mean_fitness
+        self._max_fitness = max_fitness
+        self._min_fitness = min_fitness
+        self._mean_fitness = mean_fitness
+
+    def to_list(self):
+        return [self.max_fitness, self.min_fitness, self.mean_fitness]
+
+    @staticmethod
+    def headers():
+        return ['max_fitness', 'min_fitness', 'mean_fitness']
+
+    @property
+    def max_fitness(self):
+        return self._max_fitness
+
+    @property
+    def min_fitness(self):
+        return self._min_fitness
+
+    @property
+    def mean_fitness(self):
+        return self._mean_fitness
 
 
-class GenotypeRancher(abc.ABC):
+class PopulationManager(abc.ABC):
     """
     This abstract class wraps up useful default behavior for searching the solution space.
     Subclass and override the behavior in breed_herd and cull_herd. Then, just call lifecycle.
@@ -28,7 +47,7 @@ class GenotypeRancher(abc.ABC):
         self._population = population
         self._fitness_calculator = fitness_calculator
 
-    def judge_herd(self) -> Tuple[List[Tuple[Genotype, int]], HerdReport]:
+    def calculate_population_fitness(self) -> Tuple[List[Tuple[Genotype, int]], PopulationReport]:
         """
         Use fitness_calculator to assign a rank to each Genotype in the population
         :return: each member of the population with their fitness, a summary of important findings
@@ -47,11 +66,11 @@ class GenotypeRancher(abc.ABC):
             if min_fitness < 0 or fitness < min_fitness:
                 min_fitness = fitness
 
-        report = HerdReport(max_fitness, min_fitness, total_fitness / len(judged_population))
+        report = PopulationReport(max_fitness, min_fitness, total_fitness / len(judged_population))
         return judged_population, report
 
     @abstractmethod
-    def breed_herd(self, population: List[Tuple[Genotype, int]]) -> List[Genotype]:
+    def produce_offspring(self, population: List[Tuple[Genotype, int]]) -> List[Genotype]:
         """
         Create new Genotypes from the old ones
         :param population: A list of tuples pairing a Genotype with its fitness
@@ -60,7 +79,7 @@ class GenotypeRancher(abc.ABC):
         pass
 
     @abstractmethod
-    def cull_herd(self, parents: List[Tuple[Genotype, int]], children: List[Genotype]) -> List[Genotype]:
+    def select_next_generation(self, parents: List[Tuple[Genotype, int]], children: List[Genotype]) -> List[Genotype]:
         """
         Select M individuals to make up the next generation of Genotypes
         :param parents: The old generation paired with their fitnesses
@@ -69,12 +88,12 @@ class GenotypeRancher(abc.ABC):
         """
         pass
 
-    def lifecycle(self) -> HerdReport:
+    def lifecycle(self) -> PopulationReport:
         """
         Run the population of solutions through a selection process
         :return: a summary of important findings
         """
-        judged_population, report = self.judge_herd()
-        children = self.breed_herd(judged_population)
-        self._population = self.cull_herd(judged_population, children)
+        judged_population, report = self.calculate_population_fitness()
+        children = self.produce_offspring(judged_population)
+        self._population = self.select_next_generation(judged_population, children)
         return report

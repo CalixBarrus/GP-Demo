@@ -1,40 +1,30 @@
+from operator import itemgetter
 from typing import Tuple
 from gp_demo.gp_framework import *
+from gp_demo.PopulationManager import *
 
-def search_for_phenotype(target_phenotype: str, max_iterations: int, population: List[Genotype], fitness_calculator: FitnessCalculator) -> Tuple[str, int, int]:
-    best_string = ""
-    best_string_fitness = 0
-    iterations = 0
-    target_fitness = fitness_calculator.calculate_fitness(target_phenotype, [target_phenotype])
-    genotype = population[0]
 
-    print("Starting phenotype:", genotype.to_string())
-    print("Target Fitness:", target_fitness)
+class MyManager(PopulationManager):
 
-    while iterations < max_iterations and best_string_fitness < target_fitness:
-        genotype.mutate(.2)
-        phenotype = genotype.to_string()
-        fitness = fitness_calculator.calculate_fitness(phenotype, [target_phenotype])
-        # print("phenotype:", genotype.to_string(), "fitness:", fitness)
-        if fitness > best_string_fitness:
-            best_string = phenotype
-            best_string_fitness = fitness
-            print("New best:", phenotype, "with fitness:", best_string_fitness, "after", iterations, "iterations")
-        iterations += 1
+    def produce_offspring(self, population: List[Tuple[Genotype, int]]) -> List[Genotype]:
+        children = []
+        fittest_individual = max(population, key=itemgetter(1))[0]
+        for _ in range(len(population)):
+            child = fittest_individual
+            child.mutate(.1)
+            children.append(child)
 
-    return (best_string, best_string_fitness, iterations)
+        return children
+
+    def select_next_generation(self, parents: List[Tuple[Genotype, int]], children: List[Genotype]) -> List[Genotype]:
+        return children
+
 
 def main():
-    genotype = Genotype(bytearray([0x4a, 0x4b, 0x4c, 0x4d]))
+    starting_population = [generate_random_genotype(4) for _ in range(3)]
     fitness_calculator = create_FitnessCalculator(Application.STRING_MATCH)
-
-    search_results = []
-    for i in range(100):
-        print("\n\nBeginning search {}.".format(i))
-        search_results.append(search_for_phenotype("asdf", 1_000_000, [genotype], fitness_calculator))
-
-    for result in search_results:
-        print(result)
+    manager3 = MyManager([generate_random_genotype(4) for _ in range(3)], fitness_calculator)
+    manager10 = MyManager([generate_random_genotype(4) for _ in range(10)])
 
 
 main()

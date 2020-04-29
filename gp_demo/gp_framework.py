@@ -139,25 +139,8 @@ def generate_random_population(size_of_population, size_of_genotype) -> List[Gen
 class FitnessCalculator(abc.ABC):
 
     @abc.abstractmethod
-    def calculate_fitness(self, phenotype, application_arguments) -> int:
+    def calculate_fitness(self, phenotype, application_arguments: List[any]) -> int:
         pass
-
-    @staticmethod
-    def _string_match_fitness(phenotype, arguments):
-        # Assume that the phenotype is a string of the same length as the target_string
-        if arguments is not None:
-            target_string = arguments[0]
-        else:
-            target_string = "hello world"
-
-        if len(target_string) != len(phenotype):
-            return 0
-
-        fitness = 0
-        for i in range(len(phenotype)):
-            distance = abs(ord(target_string[i]) - ord(phenotype[i]))
-            fitness += 127 - distance
-        return fitness
 
 
 class Application(Enum):
@@ -165,7 +148,13 @@ class Application(Enum):
 
 
 class FitnessCalculatorStringMatch(FitnessCalculator):
-    def calculate_fitness(self, phenotype: str, application_arguments) -> int:
+    def calculate_fitness(self, phenotype: str, application_arguments: List[any]) -> int:
+        """
+
+        :param phenotype: the phenotype to calculate the fitness of
+        :param application_arguments: the first element is the desired string
+        :return: the fitness of phenotype
+        """
         # Assume that the phenotype is a string of the same length as the target_string
         if application_arguments is not None:
             target_string = application_arguments[0]
