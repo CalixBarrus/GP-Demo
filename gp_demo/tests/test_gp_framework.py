@@ -48,6 +48,20 @@ def test_mutatate_genotype():
 def test__string_match_fitness():
     phenotype = "hello world"
     target_string = "hello world"
-    fitness = gp_framework._string_match_fitness(phenotype, [target_string])
+    perfect_fitness = gp_framework._string_match_fitness(phenotype, [target_string])
     print()
+    print(perfect_fitness)
+
+    phenotype = "hello worlc"
+    fitness = gp_framework._string_match_fitness(phenotype, [target_string])
+    print(fitness)
+    assert fitness == perfect_fitness - 1
+
+    phenotype = "hello wormd"
+    fitness = gp_framework._string_match_fitness(phenotype, [target_string])
+    print(fitness)
+    assert fitness == perfect_fitness - 1
+
+    phenotype = "           "
+    fitness = gp_framework._string_match_fitness(phenotype, [target_string])
     print(fitness)
