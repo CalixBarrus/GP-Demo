@@ -65,4 +65,3 @@ def test__string_match_fitness():
     phenotype = "           "
     fitness = gp_framework._string_match_fitness(phenotype, [target_string])
     print(fitness)
-
