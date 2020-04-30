@@ -1,5 +1,8 @@
 from operator import itemgetter
 import time
+
+from gp_demo import serializer
+from gp_demo.config import Config
 from gp_demo.gp_framework import *
 from gp_demo.PopulationManager import *
 from alexsandbox import report as rep
@@ -32,8 +35,8 @@ def main():
     rep.generate_csv("M3.csv", PopulationReport.header(), [report.to_list() for report in reports3])
     rep.generate_csv("M10.csv", PopulationReport.header(), [report.to_list() for report in reports10])
 
-    rep.generate_plot_from_csv("M3.csv", 10, False, "M3")
-    rep.generate_plot_from_csv("M10.csv", 10, False, "M10")
+    rep.generate_plot_from_csv("M3.csv", 10, "M3")
+    rep.generate_plot_from_csv("M10.csv", 10, "M10")
 
 
 def run_selection_process(manager: PopulationManager, iterations: int, name: str = None) -> List[PopulationReport]:

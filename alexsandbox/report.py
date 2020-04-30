@@ -5,7 +5,7 @@ from gp_demo.gp_framework import *
 
 
 def generate_csv(csv_name: str, header: List[any], rows: List[List[any]]) -> None:
-    with open(csv_name, 'w') as csv_file:
+    with open("csvs/{}".format(csv_name), 'w') as csv_file:
         csv_writer = csv.writer(csv_file, quoting=csv.QUOTE_NONNUMERIC)
         csv_writer.writerow(header)
         csv_writer.writerows(rows)
@@ -52,11 +52,12 @@ def generate_plot_from_csv(csv_name: str, elements_per_point: int, output_name: 
     :param save_plot: Whether or not to save the plot
     :return:
     """
+
     labels: List[str]
     data: List[List[float]] = []
 
     # read the csv file into a list of lists
-    with open(csv_name, 'r') as file:
+    with open("csvs/{}".format(csv_name), 'r') as file:
         reader = csv.reader(file, quoting=csv.QUOTE_NONNUMERIC)
         labels = next(reader)
         for row in reader:
