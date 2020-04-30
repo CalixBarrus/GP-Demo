@@ -4,3 +4,4 @@ gp_demo/__pycache__/
 .pytest_cache
 
 .idea
+.html

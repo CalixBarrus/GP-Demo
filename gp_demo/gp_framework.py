@@ -5,9 +5,11 @@ import abc
 
 from gp_demo import config
 
+
 # How to represent Genotype as list of bits? Just have it as an integer and
 # find a way to interact with the bits?
 # Maybe use a bytearray and bytes?
+
 
 class Genotype:
 
@@ -106,7 +108,7 @@ def generate_random_genotype(size_of_genotype: int) -> Genotype:
     :param size_of_genotype: Desired length of the returned Genotype
     :return: Randomly generated Genotype
     """
-    
+
     array = bytearray()
     for byte in range(size_of_genotype):
         # Generate byte, plug mask into each bit
@@ -121,7 +123,6 @@ def generate_random_genotype(size_of_genotype: int) -> Genotype:
     return Genotype(array)
 
 
-
 def generate_random_population(size_of_population, size_of_genotype) -> List[Genotype]:
     """
 
@@ -134,12 +135,13 @@ def generate_random_population(size_of_population, size_of_genotype) -> List[Gen
         population.append(generate_random_genotype(size_of_genotype))
     return population
 
-  
-
 
 class FitnessCalculator(abc.ABC):
+    def __init__(self, default_application_arguments: List[any]):
+        self._default_application_arguments = default_application_arguments
+
     @abc.abstractmethod
-    def calculate_fitness(self, phenotype, application_arguments: List[any]) -> int:
+    def calculate_fitness(self, phenotype, application_arguments: List[any] = None) -> int:
         pass
 
 
@@ -148,7 +150,10 @@ class Application(Enum):
 
 
 class FitnessCalculatorStringMatch(FitnessCalculator):
-    def calculate_fitness(self, phenotype: str, application_arguments: List[any]) -> int:
+    def __init__(self, default_application_arguments: List[any]):
+        super().__init__(default_application_arguments)
+
+    def calculate_fitness(self, phenotype: str, application_arguments: List[any] = None) -> int:
         """
 
         :param phenotype: the phenotype to calculate the fitness of
@@ -156,10 +161,12 @@ class FitnessCalculatorStringMatch(FitnessCalculator):
         :return: the fitness of phenotype
         """
         # Assume that the phenotype is a string of the same length as the target_string
-        if application_arguments is not None:
-            target_string = application_arguments[0]
-        else:
-            target_string = "hello world"
+        if application_arguments is None:
+            application_arguments = self._default_application_arguments
+        target_string = application_arguments[0]
+
+        if not isinstance(target_string, str):
+            raise InvalidArgumentException
         if len(target_string) != len(phenotype):
             return 0
 
@@ -174,17 +181,21 @@ class InvalidApplicationException(Exception):
     pass
 
 
-def create_FitnessCalculator(application: Application) -> FitnessCalculator:
-    if application == Application.STRING_MATCH:
-        return FitnessCalculatorStringMatch()
+class InvalidArgumentException(Exception):
+    pass
 
+
+def create_FitnessCalculator(application: Application, application_parameters: List[any]) -> FitnessCalculator:
+    if application == Application.STRING_MATCH:
+        return FitnessCalculatorStringMatch(application_parameters)
     else:
         raise InvalidApplicationException
 
 
- # The following three functions could be slapped into a factory design
-  
- """
+# The following three functions could be slapped into a factory design
+
+
+"""
   def _convert_to_string(genotype):
     Private method called by convert_to_phenotype.
     Convert genome into a string of the specified length.
@@ -205,7 +216,7 @@ def create_FitnessCalculator(application: Application) -> FitnessCalculator:
         result += chr(ascii_value)
  """
 
-    """
+"""
 def _convert_to_parameters(genotype, arguments):
    
     Private method called by convert_to_phenotype.
@@ -239,7 +250,7 @@ def _convert_to_parameters(genotype, arguments):
 
     return parameters
 """
-  """
+"""
   // TODO: change genotype:bytes to genotype:Genotype
 def mutate_genotype(genotype, mutation_factor):
 

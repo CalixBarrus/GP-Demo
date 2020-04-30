@@ -17,7 +17,7 @@ class PopulationReport:
         return [self.max_fitness, self.min_fitness, self.mean_fitness]
 
     @staticmethod
-    def headers():
+    def header() -> List[str]:
         return ['max_fitness', 'min_fitness', 'mean_fitness']
 
     @property
@@ -58,7 +58,7 @@ class PopulationManager(abc.ABC):
         judged_population = []
 
         for genotype in self._population:
-            fitness = self._fitness_calculator.calculate_fitness(genotype, None)
+            fitness = self._fitness_calculator.calculate_fitness(genotype.to_string())
             judged_population.append((genotype, fitness))
             total_fitness += fitness
             if fitness > max_fitness:
