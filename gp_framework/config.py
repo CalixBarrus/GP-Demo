@@ -1,4 +1,4 @@
-from gp_framework.FitnessCalculator import Application
+from gp_framework.fitness_calculator import Application
 
 
 class Config:

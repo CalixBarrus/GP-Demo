@@ -1,4 +1,4 @@
-from gp_framework import FitnessCalculator
+from gp_framework import fitness_calculator
 
 # Using Test Framework pytest
 
@@ -11,23 +11,23 @@ def test_generate_random_genotype_single_byte_range():
     # May print if desired to verify appropriate spread of integers between 0 and 255
     PRINTING = True
     for i in range(200):
-        result = FitnessCalculator.generate_random_genotype(1)
+        result = fitness_calculator.generate_random_genotype(1)
         if PRINTING:
             print(result[0])
 
 
 def test__convert_to_parameters():
-    genotype = FitnessCalculator.generate_random_genotype(64)
+    genotype = fitness_calculator.generate_random_genotype(64)
     arguments = [3]
     print()
-    print(FitnessCalculator._convert_to_parameters(genotype, arguments))
+    print(fitness_calculator._convert_to_parameters(genotype, arguments))
 
 
 def test__convert_to_string():
-    genotype = FitnessCalculator.generate_random_genotype(64)
+    genotype = fitness_calculator.generate_random_genotype(64)
     arguments = [11]
     print()
-    print(FitnessCalculator._convert_to_string(genotype, arguments))
+    print(fitness_calculator._convert_to_string(genotype, arguments))
 
 
 def test_mutatate_genotype():
@@ -40,7 +40,7 @@ def test_mutatate_genotype():
         print()
         print(genotype.hex())
     for i in range(25):
-        genotype = FitnessCalculator.mutate_genotype(genotype, mutation_factor)
+        genotype = fitness_calculator.mutate_genotype(genotype, mutation_factor)
         if PRINTING:
             print(genotype.hex())
 
@@ -48,20 +48,20 @@ def test_mutatate_genotype():
 def test__string_match_fitness():
     phenotype = "hello world"
     target_string = "hello world"
-    perfect_fitness = FitnessCalculator._string_match_fitness(phenotype, [target_string])
+    perfect_fitness = fitness_calculator._string_match_fitness(phenotype, [target_string])
     print()
     print(perfect_fitness)
 
     phenotype = "hello worlc"
-    fitness = FitnessCalculator._string_match_fitness(phenotype, [target_string])
+    fitness = fitness_calculator._string_match_fitness(phenotype, [target_string])
     print(fitness)
     assert fitness == perfect_fitness - 1
 
     phenotype = "hello wormd"
-    fitness = FitnessCalculator._string_match_fitness(phenotype, [target_string])
+    fitness = fitness_calculator._string_match_fitness(phenotype, [target_string])
     print(fitness)
     assert fitness == perfect_fitness - 1
 
     phenotype = "           "
-    fitness = FitnessCalculator._string_match_fitness(phenotype, [target_string])
+    fitness = fitness_calculator._string_match_fitness(phenotype, [target_string])
     print(fitness)

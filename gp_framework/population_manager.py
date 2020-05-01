@@ -2,9 +2,9 @@ import abc
 from typing import List, Tuple
 from abc import abstractmethod
 
-from gp_framework.FitnessCalculator import FitnessCalculator
-from gp_framework.Genotype import Genotype
-from gp_framework.Genotype import PhenotypeConverter
+from gp_framework.fitness_calculator import FitnessCalculator
+from gp_framework.genotype import Genotype
+from gp_framework.phenotype_converter import PhenotypeConverter
 
 
 class LifecycleReport:
@@ -76,7 +76,7 @@ class PopulationManager(abc.ABC):
 
         for genotype in population:
             phenotype = self._phenotype_converter.convert(genotype)
-            fitness = self._fitness_calculator.calculate_fitness(phenotype)
+            fitness = self._fitness_calculator.calculate_normalized_fitness(phenotype)
             judged_population.append((genotype, fitness))
             total_fitness += fitness
             if fitness > max_fitness:

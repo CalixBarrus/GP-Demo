@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List
-from gp_framework.Genotype import Genotype
+from gp_framework.genotype import Genotype
 from enum import Enum
 
 
@@ -9,7 +9,7 @@ class PhenotypeConverter(ABC):
         self.arguments = arguments
 
     @abstractmethod
-    def convert_to_phenotype(self, genotype: Genotype):
+    def convert(self, genotype: Genotype):
         """
         Convert the given genotype to it's corresponding phenotype corresponding
         to the arguments passed on construction
@@ -25,7 +25,7 @@ class StringPhenotypeConverter(PhenotypeConverter):
         if arguments is None or not isinstance(arguments[0], int):
             raise InvalidArgumentException
 
-    def convert_to_phenotype(self, genotype: Genotype):
+    def convert(self, genotype: Genotype):
         """
         Convert a genotype to a string of ASCII characters
 
@@ -39,7 +39,7 @@ class StringPhenotypeConverter(PhenotypeConverter):
 
         result = ""
 
-        for i in range(len(self.arguments[0])):
+        for i in range(self.arguments[0]):
             # Ignore the first bit in each byte (ASCII characters are 7 bits)
             ascii_value = StringPhenotypeConverter._normalize_ascii_value(genotype[i])
             result += chr(ascii_value)
@@ -62,7 +62,7 @@ class ParametersPhenotypeConverter(PhenotypeConverter):
         if arguments == None or not isinstance(arguments[0], int):
             raise InvalidArgumentException
 
-    def convert_to_phenotype(self, genotype: Genotype):
+    def convert(self, genotype: Genotype):
         """
         Turn genome into an array of parameters between 0 and 1 to be plugged into
         some application.

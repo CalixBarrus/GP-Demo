@@ -1,7 +1,7 @@
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import csv
-from gp_framework.FitnessCalculator import *
+from gp_framework.fitness_calculator import *
 
 
 def generate_csv(csv_name: str, header: List[any], rows: List[List[any]]) -> None:
