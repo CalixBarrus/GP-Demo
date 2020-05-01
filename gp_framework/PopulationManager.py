@@ -50,7 +50,6 @@ class PopulationManager(abc.ABC):
                  phenotype_converter: PhenotypeConverter,
                  fitness_calculator: FitnessCalculator):
         """
-        todo: should M = len(population)?
         :param population: The starting population
         :param phenotype_converter: Closely related to the provided fitness
         calculator, this converts the provided genotype to a phenotype accepted

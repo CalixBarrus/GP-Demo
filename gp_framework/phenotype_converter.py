@@ -2,7 +2,6 @@ from abc import ABC, abstractmethod
 from typing import List
 from gp_framework.Genotype import Genotype
 from enum import Enum
-from gp_framework.FitnessCalculator import FitnessCalculator
 
 
 class PhenotypeConverter(ABC):
@@ -23,7 +22,7 @@ class PhenotypeConverter(ABC):
 class StringPhenotypeConverter(PhenotypeConverter):
     def __init__(self, arguments: List[any]):
         super().__init__(arguments)
-        if arguments == None or not isinstance(arguments[0], int):
+        if arguments is None or not isinstance(arguments[0], int):
             raise InvalidArgumentException
 
     def convert_to_phenotype(self, genotype: Genotype):
@@ -68,8 +67,7 @@ class ParametersPhenotypeConverter(PhenotypeConverter):
         Turn genome into an array of parameters between 0 and 1 to be plugged into
         some application.
 
-        :param arguments: Array; the first argument should be an int determining the
-        number of parameters.
+        :param genotype: The Genotype to convert
         :return: An array of floats between 0 and 1
         """
         parameters = []
@@ -82,9 +80,9 @@ class ParametersPhenotypeConverter(PhenotypeConverter):
             # the genome.
             parameter_to_add = "0x0."
             for j in range(8):
-                if index_of_genome == len(self):
+                if index_of_genome == len(genotype):
                     index_of_genome = 0
-                parameter_to_add += str(hex(self[index_of_genome]))[2:]
+                parameter_to_add += str(hex(genotype[index_of_genome]))[2:]
                 index_of_genome += 1
             parameter_to_add += "p0"
             # parameter_to_add should be a string "0x0.****************p0"

@@ -1,8 +1,5 @@
-# How to represent Genotype as list of bits? Just have it as an integer and
-# find a way to interact with the bits?
-# Maybe use a bytearray and bytes?
 from random import randrange, random
-from typing import List, Collection
+from typing import List
 from abc import ABC, abstractmethod
 
 
@@ -13,7 +10,6 @@ class Genotype:
         Initialize an instance of Genotype
         :param array_of_bytes: The underlying representation of the genotype. For some
                 application, each byte can represent an ascii character
-        :param phenotype_converter: An object that converts this Genotype into the appropriate phenotype
         """
         self._array_of_bytes = array_of_bytes
 
