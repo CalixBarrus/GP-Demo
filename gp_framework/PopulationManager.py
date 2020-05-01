@@ -1,9 +1,10 @@
 import abc
 from typing import List, Tuple
 from abc import abstractmethod
-from gp_demo.FitnessCalculator import FitnessCalculator
-from gp_demo.Genotype import Genotype
-from gp_demo.Genotype import PhenotypeConverter
+
+from gp_framework.FitnessCalculator import FitnessCalculator
+from gp_framework.Genotype import Genotype
+from gp_framework.Genotype import PhenotypeConverter
 
 
 class LifecycleReport:
@@ -43,13 +44,17 @@ class LifecycleReport:
 class PopulationManager(abc.ABC):
     """
     This abstract class wraps up useful default behavior for searching the solution space.
-    Subclass and override the behavior in breed_herd and cull_herd. Then, just call lifecycle.
+    Subclass and override the behavior in produce_offspring and select_next_generation. Then, just call lifecycle.
     """
-    def __init__(self, population: List[Genotype], fitness_calculator: FitnessCalculator,
-                 phenotype_converter: PhenotypeConverter):
+    def __init__(self, population: List[Genotype],
+                 phenotype_converter: PhenotypeConverter,
+                 fitness_calculator: FitnessCalculator):
         """
         todo: should M = len(population)?
         :param population: The starting population
+        :param phenotype_converter: Closely related to the provided fitness
+        calculator, this converts the provided genotype to a phenotype accepted
+        by the fitness_calculator.
         :param fitness_calculator: This is used to judge our solutions
         :param phenotype_converter: converts the Genotypes into Phenotypes for use by fitness_calculator
         """
@@ -71,7 +76,8 @@ class PopulationManager(abc.ABC):
         judged_population = []
 
         for genotype in population:
-            fitness = self._fitness_calculator.calculate_normalized_fitness(self._phenotype_converter.convert(genotype))
+            phenotype = self._phenotype_converter.convert(genotype)
+            fitness = self._fitness_calculator.calculate_fitness(phenotype)
             judged_population.append((genotype, fitness))
             total_fitness += fitness
             if fitness > max_fitness:

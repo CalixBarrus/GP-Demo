@@ -1,4 +1,4 @@
-from gp_demo import FitnessCalculator
+from gp_framework import FitnessCalculator
 
 # Using Test Framework pytest
 

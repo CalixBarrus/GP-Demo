@@ -1,9 +1,11 @@
 from operator import itemgetter
 import time
+import abc
 
-from gp_demo.FitnessCalculator import *
-from gp_demo.PopulationManager import *
+from gp_framework.Genotype import generate_random_population
+from gp_framework.PopulationManager import *
 from alexsandbox import report as rep
+from gp_framework.FitnessCalculator import FitnessCalculatorStringMatch
 
 
 class MyManager(PopulationManager):
@@ -23,9 +25,11 @@ class MyManager(PopulationManager):
 
 
 def main():
-    fitness_calculator = create_FitnessCalculator(Application.STRING_MATCH, ["hello world"])
-    manager3 = MyManager(generate_random_population(3, 11), fitness_calculator)
-    manager10 = MyManager(generate_random_population(10, 11), fitness_calculator)
+    phenotypeConverter = create_PhenotypeConverter(Phenotype.STRING, [4])
+    fitness_calculator: FitnessCalculator = FitnessCalculatorStringMatch(["hello world"])
+
+    manager3 = MyManager(generate_random_population(3, 4), phenotypeConverter, fitness_calculator)
+    manager10 = MyManager(generate_random_population(10, 4), phenotypeConverter, fitness_calculator)
 
     reports3 = run_selection_process(manager3, 10_000, "M = 3 test")
     reports10 = run_selection_process(manager10, 10_000, "M = 10 test")

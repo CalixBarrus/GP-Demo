@@ -1,8 +1,10 @@
 .vscode
 __pycache__/
-gp_demo/__pycache__/
+gp_framework/__pycache__/
 .pytest_cache
 
 .idea
-.html
-.csv
+*.html
+*.csv
+/alexsandbox/csvs/*.csv
+/alexsandbox/plots/*.html
