@@ -1,12 +1,25 @@
 import plotly.graph_objects as go
+from typing import Dict
 from plotly.subplots import make_subplots
 import csv
 from gp_framework.fitness_calculator import *
+from gp_framework.population_manager import LifecycleReport
+from gp_framework import config
 
 
-def generate_csv(csv_name: str, header: List[any], rows: List[List[any]]) -> None:
+_END_OF_METADATA = ["End of metadata"]
+
+
+def generate_many_reports(header: List[str], name_to_reports: Dict[str, List[LifecycleReport]], metadata: List[List[any]]):
+    for item in name_to_reports.items():
+        generate_csv(item[0] + '.csv', header, [r.to_list() for r in item[1]], metadata)
+
+
+def generate_csv(csv_name: str, header: List[any], rows: List[List[any]], metadata: List[List[any]]):
     with open("csvs/{}".format(csv_name), 'w') as csv_file:
         csv_writer = csv.writer(csv_file, quoting=csv.QUOTE_NONNUMERIC)
+        csv_writer.writerows(metadata)
+        csv_writer.writerow(_END_OF_METADATA)
         csv_writer.writerow(header)
         csv_writer.writerows(rows)
 
@@ -41,15 +54,11 @@ def _transpose_list_of_lists(list_of_lists: List[List[any]]) -> List[List[any]]:
     return new_list
 
 
-def generate_plot_from_csv(csv_name: str, elements_per_point: int, output_name: str,
-                           show_plot: bool = True, save_plot: bool = False) -> None:
+def generate_plot_from_csv(csv_name: str, elements_per_point: int, output_name: str) -> None:
     """
     Makes nice plots to help visualize data
     :param csv_name: Name of csv file to draw data from
     :param elements_per_point: How many data points to average into one point on the plot
-    :param output_name: Name of the plot (appears at the top)
-    :param show_plot: Whether or not to display the graph upon creation
-    :param save_plot: Whether or not to save the plot
     :return:
     """
 
@@ -60,6 +69,12 @@ def generate_plot_from_csv(csv_name: str, elements_per_point: int, output_name: 
     with open("csvs/{}".format(csv_name), 'r') as file:
         reader = csv.reader(file, quoting=csv.QUOTE_NONNUMERIC)
         labels = next(reader)
+
+        # scan until the end of the metadata is reached
+        for row in reader:
+            if row == _END_OF_METADATA:
+                break
+
         for row in reader:
             data.append(row)
     data = _transpose_list_of_lists(data)
@@ -73,7 +88,7 @@ def generate_plot_from_csv(csv_name: str, elements_per_point: int, output_name: 
         fig.add_trace(go.Scatter(x=[j for j in range(len(data[i]))], y=data[i]), row=i+1, col=1)
     fig.update_layout(height=3000, width=1000*len(data), title_text=output_name)
 
-    if save_plot:
+    if config.CONFIG.save_plots:
         fig.write_html("plots/{}.html".format(output_name))
-    if show_plot:
+    if config.CONFIG.show_plots:
         fig.show()

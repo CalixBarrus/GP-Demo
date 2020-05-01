@@ -1,4 +1,4 @@
-from alexsandbox import report as rep
+from gp_framework import report as rep
 
 
 def test_transpose_list_of_lists():

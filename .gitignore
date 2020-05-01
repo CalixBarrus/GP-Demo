@@ -6,5 +6,5 @@ gp_framework/__pycache__/
 .idea
 *.html
 *.csv
-/alexsandbox/csvs/*.csv
-/alexsandbox/plots/*.html
+/gp_framework/csvs/*.csv
+/gp_framework/plots/*.html

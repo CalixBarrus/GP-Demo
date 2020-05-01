@@ -48,7 +48,7 @@ class PopulationManager(abc.ABC):
     """
     def __init__(self, population: List[Genotype],
                  phenotype_converter: PhenotypeConverter,
-                 fitness_calculator: FitnessCalculator):
+                 fitness_calculator: FitnessCalculator, name: str = "Unnamed PopulationManager"):
         """
         :param population: The starting population
         :param phenotype_converter: Closely related to the provided fitness
@@ -56,12 +56,18 @@ class PopulationManager(abc.ABC):
         by the fitness_calculator.
         :param fitness_calculator: This is used to judge our solutions
         :param phenotype_converter: converts the Genotypes into Phenotypes for use by fitness_calculator
+        :param name: the name that this PopulationManager will be known as in reports
         """
         self._population = population
         self._fitness_calculator = fitness_calculator
         self._phenotype_converter = phenotype_converter
         # this should be set in produce_offspring or select_next_generation and is returned by lifecycle
         self._newest_report: LifecycleReport = LifecycleReport()
+        self._name = name
+
+    @property
+    def name(self) -> str:
+        return self._name
 
     def calculate_population_fitness(self, population: List[Genotype])\
             -> Tuple[List[Tuple[Genotype, float]], LifecycleReport]:

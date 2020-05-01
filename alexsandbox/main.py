@@ -1,11 +1,10 @@
 from operator import itemgetter
 import time
-import abc
 
 from gp_framework.genotype import generate_random_population
 from gp_framework.phenotype_converter import create_PhenotypeConverter, Phenotype
 from gp_framework.population_manager import *
-from alexsandbox import report as rep
+from gp_framework import report as rep
 from gp_framework.fitness_calculator import FitnessCalculatorStringMatch
 
 
