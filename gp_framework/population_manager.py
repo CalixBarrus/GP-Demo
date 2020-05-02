@@ -11,11 +11,11 @@ class LifecycleReport:
     """
     It's a POJO for whatever data we think is good to keep track of from generation to generation
     """
-    def __init__(self, max_fitness=-1.0, min_fitness=-1.0, mean_fitness=-1.0, solution_found=False):
+    def __init__(self, max_fitness=-1.0, min_fitness=-1.0, mean_fitness=-1.0, solution: Genotype = None):
         self._max_fitness = max_fitness
         self._min_fitness = min_fitness
         self._mean_fitness = mean_fitness
-        self._solution_found = solution_found
+        self._solution = solution
 
     def to_list(self):
         return [self.max_fitness, self.min_fitness, self.mean_fitness]
@@ -37,8 +37,8 @@ class LifecycleReport:
         return self._mean_fitness
 
     @property
-    def solution_found(self):
-        return self._solution_found
+    def solution(self) -> Genotype:
+        return self._solution
 
 
 class PopulationManager(abc.ABC):
@@ -69,29 +69,37 @@ class PopulationManager(abc.ABC):
     def name(self) -> str:
         return self._name
 
-    def calculate_population_fitness(self, population: List[Genotype])\
-            -> Tuple[List[Tuple[Genotype, float]], LifecycleReport]:
+    def make_LifecycleReport(self, genotypes: List[Genotype]) -> LifecycleReport:
+        max_fitness = -1
+        min_fitness = -1
+        total_fitness = 0
+        fittest_genotype = None
+
+        for genotype in genotypes:
+            phenotype = self._phenotype_converter.convert(genotype)
+            fitness = self._fitness_calculator.calculate_normalized_fitness(phenotype)
+            total_fitness += fitness
+            if fitness > max_fitness:
+                max_fitness = fitness
+                fittest_genotype = genotype
+            elif min_fitness < 0 or fitness < min_fitness:
+                min_fitness = fitness
+
+        return LifecycleReport(max_fitness, min_fitness, total_fitness/len(genotypes), fittest_genotype)
+
+    def calculate_population_fitness(self, population: List[Genotype]) -> List[Tuple[Genotype, float]]:
         """
         Use fitness_calculator to assign a rank to each Genotype in the population
         :return: each member of the population with their fitness, a summary of important findings
         """
-        max_fitness = -1
-        min_fitness = -1
-        total_fitness = 0
         judged_population = []
 
         for genotype in population:
             phenotype = self._phenotype_converter.convert(genotype)
             fitness = self._fitness_calculator.calculate_normalized_fitness(phenotype)
             judged_population.append((genotype, fitness))
-            total_fitness += fitness
-            if fitness > max_fitness:
-                max_fitness = fitness
-            if min_fitness < 0 or fitness < min_fitness:
-                min_fitness = fitness
 
-        report = LifecycleReport(max_fitness, min_fitness, total_fitness / len(judged_population), max_fitness == 1.0)
-        return judged_population, report
+        return judged_population
 
     @abstractmethod
     def produce_offspring(self, population: List[Genotype]) -> Tuple[List[Genotype], List[Genotype]]:

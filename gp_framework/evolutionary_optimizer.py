@@ -14,17 +14,17 @@ class EvolutionaryOptimizer:
 
         i = 0
         reports = []
-        while i < max_iterations and (len(reports) == 0 or not reports[len(reports) - 1].solution_found):
+        #todo decide how to implement metadata, maybe have a list inside LifecycleReport
+        while i < max_iterations and (len(reports) == 0 or reports[len(reports) - 1].max_fitness != 1.0):
             reports.append(manager.lifecycle())
-            if i % 250 == 0: print(i)
             i += 1
 
-            print("Finished {} ({} iterations) at {}.".format(manager.name, i, _time()))
-            print()
+        print("Finished {} ({} iterations) at {}.".format(manager.name, i, _time()))
+        print()
 
         return reports
 
-    def run_lifecycles_for_all(self, max_iterations) -> Dict[str, List[LifecycleReport]]:
+    def run_many_lifecycles(self, max_iterations) -> Dict[str, List[LifecycleReport]]:
         manager_name_to_reports = {}
         for manager in self._managers:
             manager_name_to_reports[manager.name] = EvolutionaryOptimizer._run_lifecycles(manager, max_iterations)
