@@ -13,7 +13,8 @@ _END_OF_METADATA = ["End of metadata"]
 def generate_many_reports(header: List[str], name_to_reports: Dict[str, List[LifecycleReport]],
                           name_to_metadata: Dict[str, List[List[any]]], elements_per_point):
     for item in name_to_reports.items():
-        generate_csv(item[0] + '.csv', header, [r.to_list() for r in item[1]], name_to_metadata[item[0]])
+        # the [] in name_to_metadata.get is the value returned if item[0] is not a valid key
+        generate_csv(item[0] + '.csv', header, [r.to_list() for r in item[1]], name_to_metadata.get(item[0], []))
         generate_plot_from_csv(item[0] + '.csv', elements_per_point, item[0] + '.html')
 
 
