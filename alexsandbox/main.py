@@ -3,10 +3,9 @@ from random import choice, randint
 
 from gp_framework.evolutionary_optimizer import EvolutionaryOptimizer
 from gp_framework.genotype import generate_random_population
-from gp_framework.phenotype_converter import create_PhenotypeConverter, Phenotype
 from gp_framework.population_manager import *
 from gp_framework import report as rep
-from gp_framework.fitness_calculator import FitnessCalculatorStringMatch
+from gp_framework.fitness_calculator import make_FitnessCalculator, Application
 
 
 class SimpleManager(PopulationManager):
@@ -84,7 +83,7 @@ class MeiosisManager(PopulationManager):
             parent = choice(parents)
             child_byte_array.append(parent[i])
         child = Genotype(child_byte_array)
-        child.mutate(.001)
+        child.mutate(.005)
         return child
 
     def select_next_generation(self, parents: List[Genotype], children: List[Genotype]) -> List[Genotype]:
@@ -94,18 +93,17 @@ class MeiosisManager(PopulationManager):
 
 def main():
     string_to_find = "hello world"
-    phenotype_converter = create_PhenotypeConverter(Phenotype.STRING, [len(string_to_find)])
-    fitness_calculator: FitnessCalculator = FitnessCalculatorStringMatch([string_to_find])
+    fitness_calculator: FitnessCalculator = make_FitnessCalculator(Application.STRING_MATCH, ["hello world"])
     population = generate_random_population(20, len(string_to_find))
 
-    simple_manager = SimpleManager(population, phenotype_converter, fitness_calculator, "simple_manager")
-    truncation_manager = TruncationManager(population, phenotype_converter, fitness_calculator, "truncation_manager")
-    meiosis_manager = MeiosisManager(population, phenotype_converter, fitness_calculator, "meiosis_manager")
-    managers = [meiosis_manager]
+    simple_manager = SimpleManager(population, fitness_calculator, "simple_manager")
+    truncation_manager = TruncationManager(population, fitness_calculator, "truncation_manager")
+    meiosis_manager = MeiosisManager(population, fitness_calculator, "meiosis_manager")
+    managers = [simple_manager, truncation_manager, meiosis_manager]
 
     optimizer = EvolutionaryOptimizer(managers)
     name_to_reports = optimizer.run_many_lifecycles(10_000)
-    rep.generate_many_reports(LifecycleReport.header(), name_to_reports, {}, 4)
+    rep.generate_many_reports(LifecycleReport.header(), name_to_reports, {}, 1)
 
 
 main()

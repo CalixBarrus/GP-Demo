@@ -1,10 +1,8 @@
-import abc
 from typing import List, Tuple
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 
 from gp_framework.fitness_calculator import FitnessCalculator
 from gp_framework.genotype import Genotype
-from gp_framework.phenotype_converter import PhenotypeConverter
 
 
 class LifecycleReport:
@@ -41,26 +39,22 @@ class LifecycleReport:
         return self._solution
 
 
-class PopulationManager(abc.ABC):
+class PopulationManager(ABC):
     """
     This abstract class wraps up useful default behavior for searching the solution space.
     Subclass and override the behavior in produce_offspring and select_next_generation. Then, just call lifecycle.
     """
     def __init__(self, population: List[Genotype],
-                 phenotype_converter: PhenotypeConverter,
                  fitness_calculator: FitnessCalculator, name: str = "Unnamed PopulationManager"):
         """
         :param population: The starting population
-        :param phenotype_converter: Closely related to the provided fitness
         calculator, this converts the provided genotype to a phenotype accepted
         by the fitness_calculator.
         :param fitness_calculator: This is used to judge our solutions
-        :param phenotype_converter: converts the Genotypes into Phenotypes for use by fitness_calculator
         :param name: the name that this PopulationManager will be known as in reports
         """
         self._population = population
         self._fitness_calculator = fitness_calculator
-        self._phenotype_converter = phenotype_converter
         # this should be set in produce_offspring or select_next_generation and is returned by lifecycle
         self._newest_report: LifecycleReport = LifecycleReport()
         self._name = name
@@ -76,8 +70,7 @@ class PopulationManager(abc.ABC):
         fittest_genotype = None
 
         for genotype in genotypes:
-            phenotype = self._phenotype_converter.convert(genotype)
-            fitness = self._fitness_calculator.calculate_normalized_fitness(phenotype)
+            fitness = self._fitness_calculator.calculate_normalized_fitness(genotype)
             total_fitness += fitness
             if fitness > max_fitness:
                 max_fitness = fitness
@@ -92,11 +85,11 @@ class PopulationManager(abc.ABC):
         Use fitness_calculator to assign a rank to each Genotype in the population
         :return: each member of the population with their fitness, a summary of important findings
         """
-        judged_population = []
+
+        judged_population: List[Tuple[Genotype, float]] = []
 
         for genotype in population:
-            phenotype = self._phenotype_converter.convert(genotype)
-            fitness = self._fitness_calculator.calculate_normalized_fitness(phenotype)
+            fitness = self._fitness_calculator.calculate_normalized_fitness(genotype)
             judged_population.append((genotype, fitness))
 
         return judged_population

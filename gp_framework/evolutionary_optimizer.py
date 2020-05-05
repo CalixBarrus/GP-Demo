@@ -1,5 +1,7 @@
 import time
 from typing import List, Dict
+from queue import Queue
+from threading import Thread
 
 from gp_framework.population_manager import PopulationManager, LifecycleReport
 
@@ -14,7 +16,7 @@ class EvolutionaryOptimizer:
 
         i = 0
         reports = []
-        #todo decide how to implement metadata, maybe have a list inside LifecycleReport
+        # todo decide how to implement metadata, maybe have a list inside LifecycleReport
         while i < max_iterations and (len(reports) == 0 or reports[len(reports) - 1].max_fitness != 1.0):
             reports.append(manager.lifecycle())
             i += 1
@@ -28,6 +30,7 @@ class EvolutionaryOptimizer:
         manager_name_to_reports = {}
         for manager in self._managers:
             manager_name_to_reports[manager.name] = EvolutionaryOptimizer._run_lifecycles(manager, max_iterations)
+
         return manager_name_to_reports
 
 
