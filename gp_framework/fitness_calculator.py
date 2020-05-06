@@ -2,6 +2,7 @@ from enum import Enum
 from typing import List
 from abc import ABC, abstractmethod
 from gp_framework.genotype import Genotype
+import sim
 
 
 class Application(Enum):
@@ -55,8 +56,6 @@ class FitnessCalculator(ABC):
 class FitnessCalculatorStringMatch(FitnessCalculator):
     def __init__(self, phenotype_converter: PhenotypeConverter, application_arguments: List[any]):
         super().__init__(phenotype_converter, application_arguments)
-        if not isinstance(application_arguments[0], str):
-            raise InvalidParameterException
         self._target_string = application_arguments[0]
         self._target_fitness = self.calculate_fitness_of_string(self._target_string)
 
@@ -79,6 +78,8 @@ class FitnessCalculatorStringMatch(FitnessCalculator):
         """
 
         phenotype = self._to_string(genotype)
+        if not isinstance(phenotype, str): input()
+        # print(phenotype)
         return self.calculate_fitness_of_string(phenotype)
 
 
@@ -114,7 +115,7 @@ class StringPhenotypeConverter(PhenotypeConverter):
         """
         if len(genotype) < self._str_length:
             raise InvalidParameterException("Given genotype must be at least as "
-                                           "long as the string being generated")
+                                            "long as the string being generated")
 
         result = ""
 
@@ -129,9 +130,9 @@ class StringPhenotypeConverter(PhenotypeConverter):
     def _normalize_ascii_value(value: int) -> int:
         # This can always be tweaked later if the target string is to include
         # some symbol outside the range [65, 122].
-        if 65 <= value <= 122:
+        if 32 <= value <= 126:
             return value
-        value = (abs(value) % (122 - 65)) + 65
+        value = (abs(value) % (126 - 32)) + 32
         return value
 
 

@@ -1,8 +1,5 @@
 import time
 from typing import List, Dict
-from queue import Queue
-from threading import Thread
-
 from gp_framework.population_manager import PopulationManager, LifecycleReport
 
 

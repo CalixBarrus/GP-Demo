@@ -15,7 +15,7 @@ def generate_many_reports(header: List[str], name_to_reports: Dict[str, List[Lif
     for item in name_to_reports.items():
         # the [] in name_to_metadata.get is the value returned if item[0] is not a valid key
         generate_csv(item[0] + '.csv', header, [r.to_list() for r in item[1]], name_to_metadata.get(item[0], []))
-        generate_plot_from_csv(item[0] + '.csv', elements_per_point, item[0] + '.html')
+        generate_plot_from_csv(item[0] + '.csv', elements_per_point, item[0])
 
 
 def generate_csv(csv_name: str, header: List[any], rows: List[List[any]], metadata: List[List[any]]):
