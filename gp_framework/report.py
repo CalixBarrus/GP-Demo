@@ -1,7 +1,7 @@
 import plotly.graph_objects as go
-from typing import Dict
 from plotly.subplots import make_subplots
 import csv
+from typing import Dict
 from gp_framework.fitness_calculator import *
 from gp_framework.population_manager import LifecycleReport
 from gp_framework import config
@@ -86,10 +86,11 @@ def generate_plot_from_csv(csv_name: str, elements_per_point: int, output_name: 
     for i in range(len(data)):
         data[i] = _combine_list_elements(data[i], elements_per_point)
 
-    fig = make_subplots(rows=len(data), cols=1, subplot_titles=labels)
+    # fig = make_subplots(rows=len(data), cols=1, subplot_titles=labels)
+    fig = go.Figure()
     for i in range(len(data)):
-        fig.add_trace(go.Scatter(x=[j for j in range(len(data[i]))], y=data[i]), row=i+1, col=1)
-    fig.update_layout(height=3000, width=1000*len(data), title_text=output_name)
+        fig.add_trace(go.Scatter(x=[j for j in range(len(data[i]))], y=data[i], name=labels[i]))
+    fig.update_layout(height=1000, width=1000*len(data), title_text=output_name)
 
     if config.CONFIG.save_plots:
         fig.write_html("plots/{}.html".format(output_name))

@@ -8,10 +8,15 @@ class Genotype:
     def __init__(self, array_of_bytes: bytearray):
         """
         Initialize an instance of Genotype
+        The hashcode is set here because the hashcode must remain unchanged once an object is in a set.
         :param array_of_bytes: The underlying representation of the genotype. For some
                 application, each byte can represent an ascii character
         """
         self._array_of_bytes = array_of_bytes
+        hashcode = 0
+        for byte in array_of_bytes:
+            hashcode += byte
+        self._hashcode = hashcode
 
     def __getitem__(self, item):
         return self._array_of_bytes[item]
@@ -19,7 +24,7 @@ class Genotype:
     def __len__(self):
         return len(self._array_of_bytes)
 
-    def mutate(self, mutation_factor: float) -> None:
+    def _mutate_bytearray(self, mutation_factor) -> bytearray:
         """
         :param mutation_factor: the probability of having a 1 at any given index in the bitmask should be in [0.0, 1.0]
         """
@@ -40,7 +45,24 @@ class Genotype:
             result.append(byte ^ bitmask)
 
         # Convert list of bytes to type bytes
-        self._array_of_bytes = result
+        return bytearray(result)
+
+    def mutate(self, mutation_factor: float) -> None:
+        self._array_of_bytes = self._mutate_bytearray(mutation_factor)
+
+    def make_mutated_copy(self, mutation_factor):
+        return Genotype(self._mutate_bytearray(mutation_factor))
+
+    def __eq__(self, other):
+        if not isinstance(other, Genotype):
+            return False
+        return self._array_of_bytes == other._array_of_bytes
+
+    def __ne__(self, other):
+        return not self.__eq__(other)
+
+    def __hash__(self):
+        return self._hashcode
 
 
 def generate_random_genotype(size_of_genotype: int) -> Genotype:

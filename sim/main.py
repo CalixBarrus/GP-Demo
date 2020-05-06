@@ -8,15 +8,16 @@ from sim import meiosis
 
 
 def main():
-    string_to_find = "hello world"
-    fitness_calculator = make_FitnessCalculator(Application.STRING_MATCH, ["hello world"])
+    string_to_find = "asdf"
+    fitness_calculator = make_FitnessCalculator(Application.STRING_MATCH, [string_to_find])
     population = generate_random_population(20, len(string_to_find))
 
     simple_manager = mitosis.SimpleManager(population, fitness_calculator, "simple_mitosis_manager")
     truncation_manager = mitosis.TruncationManager(population, fitness_calculator, "truncation_manager")
     simple_meiosis_manager = meiosis.SimpleManager(population, fitness_calculator, "simple_meiosis_manager")
     multiple_children_manager = meiosis.MultipleChildrenManager(population, fitness_calculator, "multiple_children_manager")
-    managers = [simple_meiosis_manager, multiple_children_manager]
+    diversity_manager = meiosis.DiversityManager(population, fitness_calculator, "diversity_manager")
+    managers = [diversity_manager]
 
     optimizer = EvolutionaryOptimizer(managers)
     name_to_reports = optimizer.run_many_lifecycles(200)

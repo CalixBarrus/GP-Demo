@@ -1,4 +1,4 @@
-from typing import List, Tuple
+from typing import List, Tuple, Collection
 from abc import abstractmethod, ABC
 
 from gp_framework.fitness_calculator import FitnessCalculator
@@ -9,30 +9,26 @@ class LifecycleReport:
     """
     It's a POJO for whatever data we think is good to keep track of from generation to generation
     """
-    def __init__(self, max_fitness=-1.0, min_fitness=-1.0, mean_fitness=-1.0, solution: Genotype = None):
+
+    def __init__(self, max_fitness=-1.0, diversity=-1.0, solution: Genotype = None):
         self._max_fitness = max_fitness
-        self._min_fitness = min_fitness
-        self._mean_fitness = mean_fitness
+        self._diversity = diversity
         self._solution = solution
 
     def to_list(self):
-        return [self.max_fitness, self.min_fitness, self.mean_fitness]
+        return [self.max_fitness, self.diversity]
 
     @staticmethod
     def header() -> List[str]:
-        return ['max_fitness', 'min_fitness', 'mean_fitness']
+        return ['max_fitness', 'diversity']
 
     @property
     def max_fitness(self):
         return self._max_fitness
 
     @property
-    def min_fitness(self):
-        return self._min_fitness
-
-    @property
-    def mean_fitness(self):
-        return self._mean_fitness
+    def diversity(self):
+        return self._diversity
 
     @property
     def solution(self) -> Genotype:
@@ -44,6 +40,7 @@ class PopulationManager(ABC):
     This abstract class wraps up useful default behavior for searching the solution space.
     Subclass and override the behavior in produce_offspring and select_next_generation. Then, just call lifecycle.
     """
+
     def __init__(self, population: List[Genotype],
                  fitness_calculator: FitnessCalculator, name: str = "Unnamed PopulationManager"):
         """
@@ -63,24 +60,22 @@ class PopulationManager(ABC):
     def name(self) -> str:
         return self._name
 
-    def make_LifecycleReport(self, genotypes: List[Genotype]) -> LifecycleReport:
+    def make_LifecycleReport(self, genotypes: Collection[Genotype]) -> LifecycleReport:
         max_fitness = -1
-        min_fitness = -1
-        total_fitness = 0
         fittest_genotype = None
 
         for genotype in genotypes:
             fitness = self._fitness_calculator.calculate_normalized_fitness(genotype)
-            total_fitness += fitness
             if fitness > max_fitness:
                 max_fitness = fitness
                 fittest_genotype = genotype
-            elif min_fitness < 0 or fitness < min_fitness:
-                min_fitness = fitness
 
-        return LifecycleReport(max_fitness, min_fitness, total_fitness/len(genotypes), fittest_genotype)
+        unique_genotypes = set(genotypes)
+        diversity = len(unique_genotypes) / len(genotypes)
 
-    def calculate_population_fitness(self, population: List[Genotype]) -> List[Tuple[Genotype, float]]:
+        return LifecycleReport(max_fitness, diversity, fittest_genotype)
+
+    def calculate_population_fitness(self, population: Collection[Genotype]) -> List[Tuple[Genotype, float]]:
         """
         Use fitness_calculator to assign a rank to each Genotype in the population
         :return: each member of the population with their fitness, a summary of important findings
