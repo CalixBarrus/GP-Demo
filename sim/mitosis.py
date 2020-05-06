@@ -1,5 +1,7 @@
 from operator import itemgetter
 from gp_framework.population_manager import *
+from gp_framework.genotype import generate_random_population
+
 
 class SimpleManager(PopulationManager):
     def produce_offspring(self, population: List[Genotype]) -> Tuple[List[Genotype], List[Genotype]]:
@@ -38,3 +40,23 @@ class TruncationManager(PopulationManager):
         return new_population
 
 
+class BruteForce(PopulationManager):
+    def __init__(self, population: List[Genotype], fitness_calculator: FitnessCalculator, name: str = "Brute Force Manager"):
+        super().__init__(population, fitness_calculator, name)
+        judged_population = self.calculate_population_fitness(population)
+        judged_population.sort(key=lambda e: e[1], reverse=True)
+        self._best_genotype = judged_population[0][0]
+        self._best_fitness = -1
+
+    def produce_offspring(self, population: List[Genotype]) -> Tuple[List[Genotype], List[Genotype]]:
+        children = generate_random_population(20, len(self._best_genotype))
+        return [self._best_genotype], children
+
+    def select_next_generation(self, parents: List[Genotype], children: List[Genotype]) -> List[Genotype]:
+        combined_pop_with_fitness = self.calculate_population_fitness(parents + children)
+        combined_pop_with_fitness.sort(key=lambda elem: elem[1], reverse=True)
+        self._best_genotype = combined_pop_with_fitness[0][0]
+        self._best_fitness = combined_pop_with_fitness[0][1]
+        # this could just be a list with just the fittest individual since that's what'll be output anyways
+        self._newest_report = self.make_LifecycleReport([elem[0] for elem in combined_pop_with_fitness])
+        return []

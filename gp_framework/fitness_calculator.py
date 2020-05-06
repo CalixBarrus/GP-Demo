@@ -1,3 +1,4 @@
+import math
 from enum import Enum
 from typing import List
 from abc import ABC, abstractmethod
@@ -7,6 +8,7 @@ import sim
 
 class Application(Enum):
     STRING_MATCH = 0
+    PRIMES = 1
 
 
 class Phenotype(Enum):
@@ -83,16 +85,6 @@ class FitnessCalculatorStringMatch(FitnessCalculator):
         return self.calculate_fitness_of_string(phenotype)
 
 
-def make_FitnessCalculator(application: Application, parameters: List[any]) -> FitnessCalculator:
-    if application == Application.STRING_MATCH:
-        if not isinstance(parameters[0], str):
-            raise InvalidParameterException
-        target_length = len(parameters[0])
-        return FitnessCalculatorStringMatch(StringPhenotypeConverter(target_length), parameters)
-    else:
-        raise InvalidParameterException
-
-
 class InvalidApplicationException(Exception):
     pass
 
@@ -167,3 +159,98 @@ class ParametersPhenotypeConverter(PhenotypeConverter):
             parameters.append(float.fromhex(parameter_to_add))
 
         return parameters
+
+
+class PrimeNumberGenerator:
+    def __init__(self, w: int, x: int, w_delta: int, x_delta: int):
+        self._w = w
+        self._x = x
+        self._w_delta = w_delta
+        self._x_delta = x_delta
+        self._list_of_primes = [2]
+
+    def _add_to_list_of_primes(self):
+        prime = self._list_of_primes[-1] * self._w + self._x
+        self._list_of_primes.append((abs(prime) % 10_000) + 2)
+        self._update_constants()
+
+    def _update_constants(self):
+        self._w += self._w_delta
+        self._x += self._x_delta
+
+    def make_list(self, size):
+        for _ in range(size):
+            self._add_to_list_of_primes()
+
+    def __str__(self):
+        return "w = {}; x = {}; w_delta = {}; x_delta = {}".format(
+            self._w, self._x, self._w_delta, self._x_delta)
+
+    @property
+    def list_of_primes(self):
+        return self._list_of_primes
+
+
+class PrimeNumberPhenotypeConverter(PhenotypeConverter):
+    def convert(self, genotype: Genotype) -> PrimeNumberGenerator:
+        # assign each of these values based on the provided Genotype
+        w: int
+        x: int
+        w_delta: int
+        x_delta: int
+
+        new_bytes = []
+        i = 0
+        while len(new_bytes) < 16:  # 16 because we need 4 bytes for each of the desired ints
+            new_bytes.append(genotype[i % len(genotype)])
+            i += 1
+
+        w = self._to_int(new_bytes[:4])
+        x = self._to_int(new_bytes[4:8])
+        w_delta = self._to_int(new_bytes[8:12])
+        x_delta = self._to_int(new_bytes[12:16])
+        return PrimeNumberGenerator(w, x, w_delta, x_delta)
+
+    @staticmethod
+    def _to_int(bytes_) -> int:
+        return int.from_bytes(bytes_, byteorder="little", signed=True)
+
+
+class FitnessCalculatorPrimes(FitnessCalculator):
+    def __init__(self, target_num_primes: int, phenotype_converter: PrimeNumberPhenotypeConverter,
+                 application_arguments: List[any]):
+        super().__init__(phenotype_converter, application_arguments)
+        self._length_of_list_of_primes = target_num_primes
+        self._target_fitness = self._length_of_list_of_primes
+
+    @staticmethod
+    def _is_prime(x: int) -> bool:
+        for i in range(2, math.ceil(math.sqrt(x))):
+            if x % i == 0:
+                return False
+        return True
+
+    def calculate_fitness(self, genotype: Genotype) -> int:
+        prime_number_generator: PrimeNumberGenerator = self._converter.convert(genotype)
+        prime_number_generator.make_list(self._length_of_list_of_primes)
+        set_of_primes = {x for x in prime_number_generator.list_of_primes}
+        fitness = 0
+        for num in set_of_primes:
+            if self._is_prime(num):
+                fitness += 1
+        return fitness
+
+
+def make_FitnessCalculator(application: Application, parameters: List[any]) -> FitnessCalculator:
+    if application == Application.STRING_MATCH:
+        if not isinstance(parameters[0], str):
+            raise InvalidParameterException("First Parameter must be a str.")
+        target_length = len(parameters[0])
+        return FitnessCalculatorStringMatch(StringPhenotypeConverter(target_length), parameters)
+    elif application == Application.PRIMES:
+        if not isinstance(parameters[0], int):
+            raise InvalidParameterException("First Parameter must be an int.")
+        target_num_primes = parameters[0]  # how many primes we are trying to generate
+        return FitnessCalculatorPrimes(target_num_primes, PrimeNumberPhenotypeConverter(), parameters)
+    else:
+        raise InvalidParameterException
