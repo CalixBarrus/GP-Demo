@@ -17,7 +17,8 @@ def main():
     simple_meiosis_manager = meiosis.SimpleManager(population, fitness_calculator, "simple_meiosis_manager")
     multiple_children_manager = meiosis.MultipleChildrenManager(population, fitness_calculator, "multiple_children_manager")
     diversity_manager = meiosis.DiversityManager(population, fitness_calculator, "diversity_manager")
-    managers = [diversity_manager]
+    tournament_manager = meiosis.TournamentManager(population, fitness_calculator, "tournament_manager")
+    managers = [simple_meiosis_manager, multiple_children_manager, diversity_manager, tournament_manager]
 
     optimizer = EvolutionaryOptimizer(managers)
     name_to_reports = optimizer.run_many_lifecycles(10_000)

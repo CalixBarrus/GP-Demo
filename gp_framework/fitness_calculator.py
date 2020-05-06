@@ -130,9 +130,9 @@ class StringPhenotypeConverter(PhenotypeConverter):
     def _normalize_ascii_value(value: int) -> int:
         # This can always be tweaked later if the target string is to include
         # some symbol outside the range [65, 122].
-        if 32 <= value <= 126:
+        """if 32 <= value <= 126:
             return value
-        value = (abs(value) % (126 - 32)) + 32
+        value = (abs(value) % (126 - 32)) + 32"""
         return value
 
 
