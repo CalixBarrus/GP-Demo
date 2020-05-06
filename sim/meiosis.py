@@ -6,7 +6,6 @@ from gp_framework.genotype import generate_random_population
 from random import choice
 from typing import List, Tuple
 
-string_converter = StringPhenotypeConverter(11)
 MUTATION_RATE = .01
 
 
@@ -15,7 +14,6 @@ class SimpleManager(PopulationManager):
         judged_population = self.calculate_population_fitness(population)
         judged_population.sort(key=lambda e: e[1], reverse=True)  # it's still in tuple form
         fittest_individual: Genotype = judged_population[0][0]
-        print(string_converter.convert(fittest_individual))
 
         children = []
 
@@ -54,7 +52,6 @@ class MultipleChildrenManager(PopulationManager):
         judged_population = self.calculate_population_fitness(population)
         judged_population.sort(key=lambda e: e[1], reverse=True)  # it's still in tuple form
         fittest_individual: Genotype = judged_population[0][0]
-        print(string_converter.convert(fittest_individual))
 
         children = []
 
@@ -86,7 +83,7 @@ class MultipleChildrenManager(PopulationManager):
     def select_next_generation(self, parents: List[Genotype], children: List[Genotype]) -> List[Genotype]:
         combined_population = parents + children
         unique_population = set(combined_population)
-        print('# unique Genotypes:', len(unique_population))
+        #print('# unique Genotypes:', len(unique_population))
         judged_population = self.calculate_population_fitness(unique_population)
         judged_population.sort(key=lambda e: e[1], reverse=True)
 
@@ -107,7 +104,6 @@ class DiversityManager(PopulationManager):
         judged_population = self.calculate_population_fitness(population)
         judged_population.sort(key=lambda e: e[1], reverse=True)  # it's still in tuple form
         fittest_individual: Genotype = judged_population[0][0]
-        print(string_converter.convert(fittest_individual))
 
         children = []
 
@@ -149,7 +145,7 @@ class DiversityManager(PopulationManager):
     def select_next_generation(self, parents: List[Genotype], children: List[Genotype]) -> List[Genotype]:
         combined_population = parents + children
         unique_population = set(combined_population)
-        print('# unique Genotypes:', len(unique_population))
+        # print('# unique Genotypes:', len(unique_population))
         judged_population = self.calculate_population_fitness(unique_population)
         judged_population.sort(key=lambda e: e[1], reverse=True)
 

@@ -8,7 +8,7 @@ from sim import meiosis
 
 
 def main():
-    string_to_find = "asdf"
+    string_to_find = "hello world"
     fitness_calculator = make_FitnessCalculator(Application.STRING_MATCH, [string_to_find])
     population = generate_random_population(20, len(string_to_find))
 
@@ -20,7 +20,7 @@ def main():
     managers = [diversity_manager]
 
     optimizer = EvolutionaryOptimizer(managers)
-    name_to_reports = optimizer.run_many_lifecycles(200)
+    name_to_reports = optimizer.run_many_lifecycles(10_000)
     rep.generate_many_reports(LifecycleReport.header(), name_to_reports, {}, 1)
 
 

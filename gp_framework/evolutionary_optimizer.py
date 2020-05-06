@@ -1,6 +1,7 @@
 import time
 from typing import List, Dict
 from gp_framework.population_manager import PopulationManager, LifecycleReport
+from gp_framework.fitness_calculator import StringPhenotypeConverter
 
 
 class EvolutionaryOptimizer:
@@ -19,6 +20,9 @@ class EvolutionaryOptimizer:
             i += 1
 
         print("Finished {} ({} iterations) at {}.".format(manager.name, i, _time()))
+        if reports[-1].solution is not None:
+            converter = StringPhenotypeConverter(len(reports[-1].solution))
+            print("Solution:", converter.convert(reports[-1].solution))
         print()
 
         return reports
