@@ -1,7 +1,7 @@
 import time
 from typing import List, Dict
 from gp_framework.population_manager import PopulationManager, LifecycleReport
-from gp_framework.fitness_calculator import PrimeNumberPhenotypeConverter, NumberGenerator, StringPhenotypeConverter
+from gp_framework.fitness_calculator import NumberGeneratorPhenotypeConverter, NumberGenerator, StringPhenotypeConverter
 
 
 class EvolutionaryOptimizer:

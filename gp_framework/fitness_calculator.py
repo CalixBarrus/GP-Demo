@@ -5,8 +5,7 @@ from abc import ABC, abstractmethod
 from gp_framework.genotype import Genotype
 from gp_framework.phenotype.phenotype import PhenotypeConverter
 from gp_framework.exception import InvalidParameterException
-from gp_framework.phenotype.number_generator import NumberGenerator
-from gp_framework.phenotype.number_generator import NumberGeneratorPhenotypeConverter
+from gp_framework.phenotype.number_generator import NumberGenerator, NumberGeneratorPhenotypeConverter
 from gp_framework.phenotype.string_search import StringPhenotypeConverter
 
 
@@ -68,14 +67,12 @@ class FitnessCalculatorStringMatch(FitnessCalculator):
         """
 
         phenotype = self._to_string(genotype)
-        if not isinstance(phenotype, str): input()
-        # print(phenotype)
         return self.calculate_fitness_of_string(phenotype)
 
     @staticmethod
     def _normalize_ascii_value(value: int) -> int:
         # This can always be tweaked later if the target string is to include
-        # some symbol outside the range [65, 122].
+        # some symbol outside the range [32, 126].
         """if 32 <= value <= 126:
             return value
         value = (abs(value) % (126 - 32)) + 32"""
@@ -101,6 +98,7 @@ class FitnessCalculatorPrimes(FitnessCalculator):
         prime_number_generator.make_list(self._length_of_list_of_primes)
         set_of_primes = {x for x in prime_number_generator.list_of_numbers}
         fitness = 0
+        # check in the set so as not to double count anything
         for num in set_of_primes:
             if self._is_prime(num):
                 fitness += 1
@@ -117,6 +115,6 @@ def make_FitnessCalculator(application: Application, parameters: List[any]) -> F
         if not isinstance(parameters[0], int):
             raise InvalidParameterException("First Parameter must be an int.")
         target_num_primes = parameters[0]  # how many primes we are trying to generate
-        return FitnessCalculatorPrimes(target_num_primes, PrimeNumberPhenotypeConverter(), parameters)
+        return FitnessCalculatorPrimes(target_num_primes, NumberGeneratorPhenotypeConverter(), parameters)
     else:
         raise InvalidParameterException
