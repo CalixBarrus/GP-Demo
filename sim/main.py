@@ -16,11 +16,11 @@ def is_prime(x: int) -> bool:
 
 
 def main():
-    # string_to_find = "hello world"
-    number_of_primes = 50
-    size_of_genotype = 16
-    fitness_calculator = make_FitnessCalculator(Application.PRIMES, [number_of_primes])
-    population = generate_random_population(20, size_of_genotype)
+    string_to_find = "hello world"
+    # number_of_primes = 50
+    # size_of_genotype = 16
+    fitness_calculator = make_FitnessCalculator(Application.STRING_MATCH, [string_to_find])
+    population = generate_random_population(20, len(string_to_find))
 
     simple_manager = mitosis.SimpleManager(population, fitness_calculator, "simple_mitosis_manager")
     truncation_manager = mitosis.TruncationManager(population, fitness_calculator, "truncation_manager")
@@ -40,10 +40,7 @@ def main():
     print("Found solutions:")
     for elem in solutions:
         print("From", elem[0])
-        elem[1].make_list(number_of_primes)
-        set_of_primes = {x for x in elem[1].list_of_primes if is_prime(x)}
-        print(elem[1], "Generated set:")
-        print(set_of_primes, "{}/{}".format(len(set_of_primes), len(elem[1].list_of_primes)))
+        print("Generated word:", elem[1])
 
 
 main()
