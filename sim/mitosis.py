@@ -1,3 +1,6 @@
+"""
+Mitosis is splitting DNA strands and mutating them
+"""
 from operator import itemgetter
 from gp_framework.population_manager import *
 from gp_framework.genotype import generate_random_population

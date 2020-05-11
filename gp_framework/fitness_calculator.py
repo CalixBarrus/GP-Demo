@@ -1,17 +1,40 @@
 import math
-from enum import Enum
-from typing import List
+from enum import Enum, auto
+from typing import List, Dict
 from abc import ABC, abstractmethod
 from gp_framework.genotype import Genotype
 from gp_framework.phenotype.phenotype import PhenotypeConverter
-from gp_framework.exception import InvalidParameterException
+from gp_framework.exception import InvalidParameterException, InvalidApplicationException
 from gp_framework.phenotype.number_generator import NumberGenerator, NumberGeneratorPhenotypeConverter
 from gp_framework.phenotype.string_search import StringPhenotypeConverter
+from gp_framework.phenotype.blackjack import Player, BlackJackTable, PlayerParameters, PlayerConverter
 
 
 class Application(Enum):
-    STRING_MATCH = 0
-    PRIMES = 1
+    STRING_MATCH = auto()
+    PRIMES = auto()
+    BLACK_JACK = auto()
+
+
+class PopulationFitnessCalculator(ABC):
+    def __init__(self, phenotype_converter: PhenotypeConverter, target_fitness: int):
+        self._converter = phenotype_converter
+        self._target_fitness = target_fitness
+
+    @property
+    def target_fitness(self):
+        return self._target_fitness
+
+    def calculate_normalized_fitness(self, population: List[Genotype]) -> Dict[Genotype, float]:
+        return {elem[0]: elem[1]/self._target_fitness for elem in self.calculate_fitness(population)}
+
+    @abstractmethod
+    def calculate_fitness(self, population: List[Genotype]) -> Dict[Genotype, int]:
+        """
+        Calculate the fitness of every genotype in the population. They will be automatically converted to a phenotype.
+        :return: A dictionary mapping each genotype to an integer representing its fitness
+        """
+        pass
 
 
 class FitnessCalculator(ABC):
@@ -37,9 +60,13 @@ class FitnessCalculator(ABC):
         Calculate the fitness of the given phenotype
         :param genotype: the Genotype to calculate the fitness of. It will be
         automatically converted to the correct phenotype.
-        :return: the fitness of phenotype, a float between 0 and 1
+        :return: the fitness of phenotype
         """
         pass
+
+    @property
+    def converter(self) -> PhenotypeConverter:
+        return self._converter
 
 
 class FitnessCalculatorStringMatch(FitnessCalculator):
@@ -105,6 +132,36 @@ class FitnessCalculatorPrimes(FitnessCalculator):
         return fitness
 
 
+class PopulationFitnessCalculatorBlackJack(PopulationFitnessCalculator):
+    def __init__(self, target_fitness, number_of_rounds):
+        super().__init__(PlayerConverter(), target_fitness)
+        self._number_of_rounds = number_of_rounds  # how many rounds the players play
+
+    def calculate_fitness(self, population: List[Genotype]) -> Dict[Genotype, int]:
+        players = []
+        for genotype in population:
+            players.append(self._converter.convert(genotype))
+        table = BlackJackTable(players)
+        table.play_rounds(self._number_of_rounds)
+        fitness_dict = {}
+        for i in range(len(players)):
+            fitness_dict[population[i]] = table.players[i].money
+        return fitness_dict
+
+
+class FitnessCalculatorBlackJack(FitnessCalculator):
+    def __init__(self, phenotype_converter: PhenotypeConverter, application_arguments: List[any]):
+        super().__init__(phenotype_converter, application_arguments)
+        self._target_fitness = application_arguments[0]
+        self._number_of_rounds = application_arguments[1]
+
+    def calculate_fitness(self, genotype: Genotype) -> int:
+        player = self._converter.convert(genotype)
+        table = BlackJackTable([player])
+        table.play_rounds(self._number_of_rounds)
+        return player.money
+
+
 def make_FitnessCalculator(application: Application, parameters: List[any]) -> FitnessCalculator:
     if application == Application.STRING_MATCH:
         if not isinstance(parameters[0], str):
@@ -116,5 +173,22 @@ def make_FitnessCalculator(application: Application, parameters: List[any]) -> F
             raise InvalidParameterException("First Parameter must be an int.")
         target_num_primes = parameters[0]  # how many primes we are trying to generate
         return FitnessCalculatorPrimes(target_num_primes, NumberGeneratorPhenotypeConverter(), parameters)
+    elif application == Application.BLACK_JACK:
+        if not isinstance(parameters[0], int):
+            raise InvalidParameterException("Please specify how much total winnings is the goal.")
+        if not isinstance(parameters[1], int):
+            raise InvalidParameterException("Please specify how many rounds will be given to each player")
+        return FitnessCalculatorBlackJack(PlayerConverter(), parameters)
     else:
-        raise InvalidParameterException
+        raise InvalidApplicationException("{} is not a valid choice".format(str(application)))
+
+
+def make_PopulationFitnessCalculator(application: Application, parameters: List[any]) -> PopulationFitnessCalculator:
+    if application == Application.BLACK_JACK:
+        if not isinstance(parameters[0], int):
+            raise InvalidParameterException("Please specify how much total winnings is the goal.")
+        if not isinstance(parameters[1], int):
+            raise InvalidParameterException("Please specify how many rounds will be given to each player")
+        return PopulationFitnessCalculatorBlackJack(target_fitness=parameters[0], number_of_rounds=parameters[1])
+    else:
+        raise InvalidApplicationException("{} is not a valid choice".format(str(application)))

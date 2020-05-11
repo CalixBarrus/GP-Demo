@@ -65,7 +65,7 @@ class PopulationManager(ABC):
         fittest_genotype = None
 
         for genotype in genotypes:
-            fitness = self._fitness_calculator.calculate_normalized_fitness(genotype)
+            fitness = self._fitness_calculator.calculate_fitness(genotype)
             if fitness > max_fitness:
                 max_fitness = fitness
                 fittest_genotype = genotype

@@ -3,6 +3,7 @@ from gp_framework.genotype import generate_random_population
 from gp_framework import report as rep
 from gp_framework.population_manager import *
 from gp_framework.fitness_calculator import make_FitnessCalculator, Application
+from gp_framework.phenotype.blackjack import PlayerParameters
 from sim import mitosis
 from sim import meiosis
 from math import ceil, sqrt
@@ -16,11 +17,12 @@ def is_prime(x: int) -> bool:
 
 
 def main():
-    string_to_find = "hello world"
+    # string_to_find = "hello world"
     # number_of_primes = 50
     # size_of_genotype = 16
-    fitness_calculator = make_FitnessCalculator(Application.STRING_MATCH, [string_to_find])
-    population = generate_random_population(20, len(string_to_find))
+    black_jack_genotype_length = PlayerParameters.number_of_parameters() * 4  # 4 bytes per float
+    fitness_calculator = make_FitnessCalculator(Application.BLACK_JACK, [1000, 20])
+    population = generate_random_population(20, black_jack_genotype_length)
 
     simple_manager = mitosis.SimpleManager(population, fitness_calculator, "simple_mitosis_manager")
     truncation_manager = mitosis.TruncationManager(population, fitness_calculator, "truncation_manager")
@@ -35,7 +37,7 @@ def main():
     name_to_reports = optimizer.run_many_lifecycles(5000)
     rep.generate_many_reports(LifecycleReport.header(), name_to_reports, {}, 1)
     solutions: List[Tuple[str, any]] =\
-        [(elem[0], fitness_calculator._converter.convert(elem[1][-1].solution)) for elem in name_to_reports.items()]
+        [(elem[0], fitness_calculator.converter.convert(elem[1][-1].solution)) for elem in name_to_reports.items()]
 
     print("Found solutions:")
     for elem in solutions:

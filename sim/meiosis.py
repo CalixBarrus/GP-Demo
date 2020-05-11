@@ -1,3 +1,6 @@
+"""
+Meiosis is mixing bits of DNA from parents
+"""
 import math
 
 from gp_framework.population_manager import PopulationManager, Genotype
@@ -6,7 +9,7 @@ from gp_framework.genotype import generate_random_population
 from random import choice, randint
 from typing import List, Tuple
 
-MUTATION_RATE = .005
+MUTATION_RATE = .02
 
 
 class SimpleManager(PopulationManager):
