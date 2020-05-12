@@ -5,12 +5,13 @@ from gp_framework.fitness_calculator import NumberGeneratorPhenotypeConverter, N
 
 
 class EvolutionaryOptimizer:
-    def __init__(self, managers: List[PopulationManager]):
+    def __init__(self, managers: List[PopulationManager], show_output: bool):
         self._managers = managers
+        self._show_output = show_output
 
-    @staticmethod
-    def _run_lifecycles(manager: PopulationManager, max_iterations: int = -1) -> List[LifecycleReport]:
-        print("Began {} at {}.".format(manager.name, _time()))
+    def _run_lifecycles(self, manager: PopulationManager, max_iterations: int = -1) -> List[LifecycleReport]:
+        if self._show_output:
+            print("Began {} at {}.".format(manager.name, _time()))
 
         i = 0
         reports = []
@@ -19,11 +20,12 @@ class EvolutionaryOptimizer:
             reports.append(manager.lifecycle())
             i += 1
 
-        print("Finished {} ({} iterations) at {}.".format(manager.name, i, _time()))
-        if reports[-1].solution is not None:
-            converter = StringPhenotypeConverter(len(reports[-1].solution))
-            print("Solution:", converter.convert(reports[-1].solution))
-        print()
+        if self._show_output:
+            print("Finished {} ({} iterations) at {}.".format(manager.name, i, _time()))
+            if reports[-1].solution is not None:
+                converter = StringPhenotypeConverter(len(reports[-1].solution))
+                print("Solution:", converter.convert(reports[-1].solution))
+            print()
 
         return reports
 
