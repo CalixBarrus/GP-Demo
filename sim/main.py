@@ -1,11 +1,9 @@
 from gp_framework.evolutionary_optimizer import EvolutionaryOptimizer
 from gp_framework.genotype import generate_random_population
-from gp_framework import report as rep
+from gp_framework import report as rep, meiosis, mitosis
 from gp_framework.population_manager import *
 from gp_framework.fitness_calculator import make_FitnessCalculator, Application
 from gp_framework.phenotype.blackjack import PlayerParameters
-from sim import mitosis
-from sim import meiosis
 from math import ceil, sqrt
 
 
