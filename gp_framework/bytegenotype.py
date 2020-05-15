@@ -63,16 +63,16 @@ class ByteGenotype(Genotype):
         return self._hashcode
 
     @staticmethod
-    def generate_random_genotype(size_of_genotype: int):
+    def generate_random_genotype(genotype_size: int):
         """
         Factory method to randomly generate an instance of Genotype. For some
         application, each byte can represent an ascii character.
-        :param size_of_genotype: Desired length of the returned Genotype
+        :param genotype_size: Desired length of the returned Genotype
         :return: Randomly generated Genotype
         """
 
         array = bytearray()
-        for byte in range(size_of_genotype):
+        for byte in range(genotype_size):
             # Generate byte, plug mask into each bit
             new_byte = randrange(2)
             for bit in range(7):
@@ -85,15 +85,12 @@ class ByteGenotype(Genotype):
         return ByteGenotype(array)
 
     @staticmethod
-    def generate_random_population(size_of_population, size_of_genotype):
+    def generate_random_population(population_size, genotype_size):
         """
-
-        :param size_of_population: length of list to return
-        :param size_of_genotype: size of each genotype
+        Convenience method to generate a list of random genotypes
+        :param population_size: length of list to return
+        :param genotype_size: size of each genotype
         :return: list of Genotypes
         """
 
-        population = []
-        for i in range(size_of_population):
-            population.append(ByteGenotype.generate_random_genotype(size_of_genotype))
-        return population
+        return [ByteGenotype.generate_random_genotype(genotype_size) for _ in range(population_size)]

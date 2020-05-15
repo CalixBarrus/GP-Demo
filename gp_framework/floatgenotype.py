@@ -37,3 +37,13 @@ class FloatGenotype(Genotype):
 
     def __hash__(self):
         return self._hashcode
+
+    @staticmethod
+    def generate_random_genotype(genotype_size: int, lower_bound: float, upper_bound: float):
+        floats = [np.random.uniform(lower_bound, upper_bound, 1)[0] for _ in range(genotype_size)]
+        return FloatGenotype(floats)
+
+    @staticmethod
+    def generate_random_population(population_size: int, genotype_size: int, lower_bound: float, upper_bound: float):
+        return [FloatGenotype.generate_random_genotype(genotype_size, lower_bound, upper_bound)
+                for _ in range(population_size)]

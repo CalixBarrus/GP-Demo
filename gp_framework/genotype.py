@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 
+
 class Genotype(ABC):
     @abstractmethod
     def mutate(self, mutation_factor: float):
