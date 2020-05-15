@@ -1,8 +1,9 @@
+from gp_framework.genotype import Genotype
 from typing import List
 import numpy as np
 
 
-class FloatGenotype:
+class FloatGenotype(Genotype):
     def __init__(self, floats: List[float]):
         self._floats = floats
         hashcode = 0

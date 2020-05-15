@@ -2,7 +2,7 @@ from typing import List, Tuple, Collection
 from abc import abstractmethod, ABC
 
 from gp_framework.fitness_calculator import FitnessCalculator
-from gp_framework.bytegenotype import ByteGenotype
+from gp_framework.bytegenotype import Genotype
 
 
 class LifecycleReport:
@@ -10,7 +10,7 @@ class LifecycleReport:
     It's a POJO for whatever data we think is good to keep track of from generation to generation
     """
 
-    def __init__(self, max_fitness=-1.0, diversity=-1.0, solution: ByteGenotype = None):
+    def __init__(self, max_fitness=-1.0, diversity=-1.0, solution: Genotype = None):
         self._max_fitness = max_fitness
         self._diversity = diversity
         self._solution = solution
@@ -31,7 +31,7 @@ class LifecycleReport:
         return self._diversity
 
     @property
-    def solution(self) -> ByteGenotype:
+    def solution(self) -> Genotype:
         return self._solution
 
 
@@ -41,7 +41,7 @@ class PopulationManager(ABC):
     Subclass and override the behavior in produce_offspring and select_next_generation. Then, just call lifecycle.
     """
 
-    def __init__(self, population: List[ByteGenotype],
+    def __init__(self, population: List[Genotype],
                  fitness_calculator: FitnessCalculator, name: str = "Unnamed PopulationManager"):
         """
         :param population: The starting population
@@ -60,7 +60,7 @@ class PopulationManager(ABC):
     def name(self) -> str:
         return self._name
 
-    def make_LifecycleReport(self, genotypes: Collection[ByteGenotype]) -> LifecycleReport:
+    def make_LifecycleReport(self, genotypes: Collection[Genotype]) -> LifecycleReport:
         max_fitness = -1
         fittest_genotype = None
 
@@ -75,13 +75,13 @@ class PopulationManager(ABC):
 
         return LifecycleReport(max_fitness, diversity, fittest_genotype)
 
-    def calculate_population_fitness(self, population: Collection[ByteGenotype]) -> List[Tuple[ByteGenotype, float]]:
+    def calculate_population_fitness(self, population: Collection[Genotype]) -> List[Tuple[Genotype, float]]:
         """
         Use fitness_calculator to assign a rank to each Genotype in the population
         :return: each member of the population with their fitness, a summary of important findings
         """
 
-        judged_population: List[Tuple[ByteGenotype, float]] = []
+        judged_population: List[Tuple[Genotype, float]] = []
 
         for genotype in population:
             fitness = self._fitness_calculator.calculate_normalized_fitness(genotype)
@@ -90,7 +90,7 @@ class PopulationManager(ABC):
         return judged_population
 
     @abstractmethod
-    def produce_offspring(self, population: List[ByteGenotype]) -> Tuple[List[ByteGenotype], List[ByteGenotype]]:
+    def produce_offspring(self, population: List[Genotype]) -> Tuple[List[Genotype], List[Genotype]]:
         """
         Create new Genotypes from the old ones
         :param population: A list of tuples pairing a Genotype with its fitness
@@ -99,7 +99,7 @@ class PopulationManager(ABC):
         pass
 
     @abstractmethod
-    def select_next_generation(self, parents: List[ByteGenotype], children: List[ByteGenotype]) -> List[ByteGenotype]:
+    def select_next_generation(self, parents: List[Genotype], children: List[Genotype]) -> List[Genotype]:
         """
         Select M individuals to make up the next generation of Genotypes
         :param parents: The old generation paired with their fitnesses

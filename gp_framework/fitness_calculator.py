@@ -2,7 +2,7 @@ import math
 from enum import Enum, auto
 from typing import List, Dict
 from abc import ABC, abstractmethod
-from gp_framework.bytegenotype import ByteGenotype
+from gp_framework.genotype import Genotype
 from gp_framework.phenotype.phenotype import PhenotypeConverter
 from gp_framework.exception import InvalidParameterException, InvalidApplicationException
 from gp_framework.phenotype.number_generator import NumberGenerator, NumberGeneratorPhenotypeConverter
@@ -25,11 +25,11 @@ class PopulationFitnessCalculator(ABC):
     def target_fitness(self):
         return self._target_fitness
 
-    def calculate_normalized_fitness(self, population: List[ByteGenotype]) -> Dict[ByteGenotype, float]:
+    def calculate_normalized_fitness(self, population: List[Genotype]) -> Dict[Genotype, float]:
         return {elem[0]: elem[1]/self._target_fitness for elem in self.calculate_fitness(population)}
 
     @abstractmethod
-    def calculate_fitness(self, population: List[ByteGenotype]) -> Dict[ByteGenotype, int]:
+    def calculate_fitness(self, population: List[Genotype]) -> Dict[Genotype, int]:
         """
         Calculate the fitness of every genotype in the population. They will be automatically converted to a phenotype.
         :return: A dictionary mapping each genotype to an integer representing its fitness
@@ -51,11 +51,11 @@ class FitnessCalculator(ABC):
     def target_fitness(self):
         return self._target_fitness
 
-    def calculate_normalized_fitness(self, genotype: ByteGenotype) -> float:
+    def calculate_normalized_fitness(self, genotype: Genotype) -> float:
         return self.calculate_fitness(genotype) / self._target_fitness
 
     @abstractmethod
-    def calculate_fitness(self, genotype: ByteGenotype) -> int:
+    def calculate_fitness(self, genotype: Genotype) -> int:
         """
         Calculate the fitness of the given phenotype
         :param genotype: the Genotype to calculate the fitness of. It will be
@@ -75,7 +75,7 @@ class FitnessCalculatorStringMatch(FitnessCalculator):
         self._target_string = application_arguments[0]
         self._target_fitness = self.calculate_fitness_of_string(self._target_string)
 
-    def _to_string(self, genotype: ByteGenotype) -> str:
+    def _to_string(self, genotype: Genotype) -> str:
         return self._converter.convert(genotype)
 
     def calculate_fitness_of_string(self, string: str):
@@ -88,7 +88,7 @@ class FitnessCalculatorStringMatch(FitnessCalculator):
             fitness += 127 - distance
         return fitness
 
-    def calculate_fitness(self, genotype: ByteGenotype) -> int:
+    def calculate_fitness(self, genotype: Genotype) -> int:
         """
         This is similar to the other function, but returns an unnormalized value
         """
@@ -120,7 +120,7 @@ class FitnessCalculatorPrimes(FitnessCalculator):
                 return False
         return True
 
-    def calculate_fitness(self, genotype: ByteGenotype) -> int:
+    def calculate_fitness(self, genotype: Genotype) -> int:
         prime_number_generator: NumberGenerator = self._converter.convert(genotype)
         prime_number_generator.make_list(self._length_of_list_of_primes)
         set_of_primes = {x for x in prime_number_generator.list_of_numbers}
@@ -137,7 +137,7 @@ class PopulationFitnessCalculatorBlackJack(PopulationFitnessCalculator):
         super().__init__(PlayerConverter(), target_fitness)
         self._number_of_rounds = number_of_rounds  # how many rounds the players play
 
-    def calculate_fitness(self, population: List[ByteGenotype]) -> Dict[ByteGenotype, int]:
+    def calculate_fitness(self, population: List[Genotype]) -> Dict[Genotype, int]:
         players = []
         for genotype in population:
             players.append(self._converter.convert(genotype))
@@ -155,7 +155,7 @@ class FitnessCalculatorBlackJack(FitnessCalculator):
         self._target_fitness = application_arguments[0]
         self._number_of_rounds = application_arguments[1]
 
-    def calculate_fitness(self, genotype: ByteGenotype) -> int:
+    def calculate_fitness(self, genotype: Genotype) -> int:
         player = self._converter.convert(genotype)
         table = BlackJackTable([player])
         table.play_rounds(self._number_of_rounds)

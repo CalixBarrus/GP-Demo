@@ -1,7 +1,8 @@
+from gp_framework.genotype import Genotype
 from random import randrange, random
 
 
-class ByteGenotype:
+class ByteGenotype(Genotype):
     def __init__(self, array_of_bytes: bytearray):
         """
         Initialize an instance of Genotype
