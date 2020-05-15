@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="GP_Framework_BYU_HCMI", 
-    version="0.0.1",
+    version="0.0.2",
     author="A. Anthon/C. Barrus",
     author_email="",
     description="Contains some basic genetic algorithms that can be used for arbitrary applications",

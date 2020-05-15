@@ -1,10 +1,7 @@
 from random import randrange, random
-from typing import List
-from abc import ABC, abstractmethod
 
 
-class Genotype:
-
+class ByteGenotype:
     def __init__(self, array_of_bytes: bytearray):
         """
         Initialize an instance of Genotype
@@ -51,10 +48,10 @@ class Genotype:
         self._array_of_bytes = self._mutate_bytearray(mutation_factor)
 
     def make_mutated_copy(self, mutation_factor):
-        return Genotype(self._mutate_bytearray(mutation_factor))
+        return ByteGenotype(self._mutate_bytearray(mutation_factor))
 
     def __eq__(self, other):
-        if not isinstance(other, Genotype):
+        if not isinstance(other, ByteGenotype):
             return False
         return self._array_of_bytes == other._array_of_bytes
 
@@ -64,38 +61,38 @@ class Genotype:
     def __hash__(self):
         return self._hashcode
 
+    @staticmethod
+    def generate_random_genotype(size_of_genotype: int):
+        """
+        Factory method to randomly generate an instance of Genotype. For some
+        application, each byte can represent an ascii character.
+        :param size_of_genotype: Desired length of the returned Genotype
+        :return: Randomly generated Genotype
+        """
 
-def generate_random_genotype(size_of_genotype: int) -> Genotype:
-    """
-    Factory method to randomly generate an instance of Genotype. For some
-    application, each byte can represent an ascii character.
-    :param size_of_genotype: Desired length of the returned Genotype
-    :return: Randomly generated Genotype
-    """
+        array = bytearray()
+        for byte in range(size_of_genotype):
+            # Generate byte, plug mask into each bit
+            new_byte = randrange(2)
+            for bit in range(7):
+                new_byte = new_byte << 1
+                if 1 == randrange(2):
+                    new_byte += 1
 
-    array = bytearray()
-    for byte in range(size_of_genotype):
-        # Generate byte, plug mask into each bit
-        new_byte = randrange(2)
-        for bit in range(7):
-            new_byte = new_byte << 1
-            if 1 == randrange(2):
-                new_byte += 1
+            array.append(new_byte)
 
-        array.append(new_byte)
+        return ByteGenotype(array)
 
-    return Genotype(array)
+    @staticmethod
+    def generate_random_population(size_of_population, size_of_genotype):
+        """
 
+        :param size_of_population: length of list to return
+        :param size_of_genotype: size of each genotype
+        :return: list of Genotypes
+        """
 
-def generate_random_population(size_of_population, size_of_genotype) -> List[Genotype]:
-    """
-
-    :param size_of_population: length of list to return
-    :param size_of_genotype: size of each genotype
-    :return: list of Genotypes
-    """
-
-    population = []
-    for i in range(size_of_population):
-        population.append(generate_random_genotype(size_of_genotype))
-    return population
+        population = []
+        for i in range(size_of_population):
+            population.append(ByteGenotype.generate_random_genotype(size_of_genotype))
+        return population

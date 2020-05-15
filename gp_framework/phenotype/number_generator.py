@@ -1,4 +1,4 @@
-from gp_framework.genotype import Genotype
+from gp_framework.bytegenotype import ByteGenotype
 from gp_framework.phenotype.phenotype import PhenotypeConverter
 
 
@@ -33,7 +33,7 @@ class NumberGenerator:
 
 
 class NumberGeneratorPhenotypeConverter(PhenotypeConverter):
-    def convert(self, genotype: Genotype) -> NumberGenerator:
+    def convert(self, genotype: ByteGenotype) -> NumberGenerator:
         # assign each of these values based on the provided Genotype
         w: int
         x: int

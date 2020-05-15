@@ -1,5 +1,5 @@
 from gp_framework.evolutionary_optimizer import EvolutionaryOptimizer
-from gp_framework.genotype import generate_random_population
+from gp_framework.bytegenotype import generate_random_population
 from gp_framework import report as rep, meiosis, mitosis
 from gp_framework.population_manager import *
 from gp_framework.fitness_calculator import make_FitnessCalculator, Application

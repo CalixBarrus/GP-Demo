@@ -3,9 +3,9 @@ Meiosis is mixing bits of DNA from parents
 """
 import math
 
-from gp_framework.population_manager import PopulationManager, Genotype
+from gp_framework.population_manager import PopulationManager, ByteGenotype
 from gp_framework.fitness_calculator import StringPhenotypeConverter, FitnessCalculator
-from gp_framework.genotype import generate_random_population
+from gp_framework.bytegenotype import generate_random_population
 from random import choice, randint
 from typing import List, Tuple
 
@@ -16,10 +16,10 @@ class SimpleManager(PopulationManager):
     """
     Takes a very simplistic approach to creating new Genotypes from existing ones
     """
-    def produce_offspring(self, population: List[Genotype]) -> Tuple[List[Genotype], List[Genotype]]:
+    def produce_offspring(self, population: List[ByteGenotype]) -> Tuple[List[ByteGenotype], List[ByteGenotype]]:
         judged_population = self.calculate_population_fitness(population)
         judged_population.sort(key=lambda e: e[1], reverse=True)  # it's still in tuple form
-        fittest_individual: Genotype = judged_population[0][0]
+        fittest_individual: ByteGenotype = judged_population[0][0]
 
         children = []
 
@@ -29,7 +29,7 @@ class SimpleManager(PopulationManager):
         return population, children
 
     @staticmethod
-    def create_genotype(parents: List[Genotype]) -> Genotype:
+    def create_genotype(parents: List[ByteGenotype]) -> ByteGenotype:
         """
         Randomly select bits of the parent Genotypes to create a new child Genotype
         :param parents: A list of all the possible parents for the child Genotype
@@ -38,11 +38,11 @@ class SimpleManager(PopulationManager):
         for i in range(len(parents[0])):
             parent = choice(parents)
             child_byte_array.append(parent[i])
-        child = Genotype(child_byte_array)
+        child = ByteGenotype(child_byte_array)
         child.mutate(MUTATION_RATE)
         return child
 
-    def select_next_generation(self, parents: List[Genotype], children: List[Genotype]) -> List[Genotype]:
+    def select_next_generation(self, parents: List[ByteGenotype], children: List[ByteGenotype]) -> List[ByteGenotype]:
         self._newest_report = self.make_LifecycleReport(children)
         return children
 
@@ -51,16 +51,16 @@ class MultipleChildrenManager(PopulationManager):
     """
     Each set of parent Genotypes produces multiple child Genotypes
     """
-    def __init__(self, population: List[Genotype], fitness_calculator: FitnessCalculator, name: str):
+    def __init__(self, population: List[ByteGenotype], fitness_calculator: FitnessCalculator, name: str):
         super().__init__(population, fitness_calculator, name)
         # M is the population size. This variable is used to make sure the actual population size stays constant
         self._M = len(population)
         self._num_children = 3
 
-    def produce_offspring(self, population: List[Genotype]) -> Tuple[List[Genotype], List[Genotype]]:
+    def produce_offspring(self, population: List[ByteGenotype]) -> Tuple[List[ByteGenotype], List[ByteGenotype]]:
         judged_population = self.calculate_population_fitness(population)
         judged_population.sort(key=lambda e: e[1], reverse=True)  # it's still in tuple form
-        fittest_individual: Genotype = judged_population[0][0]
+        fittest_individual: ByteGenotype = judged_population[0][0]
 
         children = []
 
@@ -69,14 +69,14 @@ class MultipleChildrenManager(PopulationManager):
 
         return population, children
 
-    def produce_multiple_children(self, parents: List[Genotype]) -> List[Genotype]:
+    def produce_multiple_children(self, parents: List[ByteGenotype]) -> List[ByteGenotype]:
         children = []
         for i in range(self._num_children):
             children.append(MultipleChildrenManager.create_genotype(parents))
         return children
 
     @staticmethod
-    def create_genotype(parents: List[Genotype]) -> Genotype:
+    def create_genotype(parents: List[ByteGenotype]) -> ByteGenotype:
         """
         Randomly select bits of the parent Genotypes to create a new child Genotype
         :param parents: A list of all the possible parents for the child Genotype
@@ -85,11 +85,11 @@ class MultipleChildrenManager(PopulationManager):
         for i in range(len(parents[0])):
             parent = choice(parents)
             child_byte_array.append(parent[i])
-        child = Genotype(child_byte_array)
+        child = ByteGenotype(child_byte_array)
         child.mutate(MUTATION_RATE)
         return child
 
-    def select_next_generation(self, parents: List[Genotype], children: List[Genotype]) -> List[Genotype]:
+    def select_next_generation(self, parents: List[ByteGenotype], children: List[ByteGenotype]) -> List[ByteGenotype]:
         combined_population = parents + children
         unique_population = set(combined_population)
         # print('# unique Genotypes:', len(unique_population))
@@ -106,16 +106,16 @@ class DiversityManager(PopulationManager):
     """
     Encourages diversity in the population
     """
-    def __init__(self, population: List[Genotype], fitness_calculator: FitnessCalculator, name: str):
+    def __init__(self, population: List[ByteGenotype], fitness_calculator: FitnessCalculator, name: str):
         super().__init__(population, fitness_calculator, name)
         # M is the population size. This variable is used to make sure the actual population size stays constant
         self._M = len(population)
         self._num_children = 2
 
-    def produce_offspring(self, population: List[Genotype]) -> Tuple[List[Genotype], List[Genotype]]:
+    def produce_offspring(self, population: List[ByteGenotype]) -> Tuple[List[ByteGenotype], List[ByteGenotype]]:
         judged_population = self.calculate_population_fitness(population)
         judged_population.sort(key=lambda e: e[1], reverse=True)  # it's still in tuple form
-        fittest_individual: Genotype = judged_population[0][0]
+        fittest_individual: ByteGenotype = judged_population[0][0]
 
         children = []
 
@@ -124,14 +124,14 @@ class DiversityManager(PopulationManager):
 
         return population, children
 
-    def produce_multiple_children(self, parents: List[Genotype]) -> List[Genotype]:
+    def produce_multiple_children(self, parents: List[ByteGenotype]) -> List[ByteGenotype]:
         children = []
         for i in range(self._num_children):
             children.append(MultipleChildrenManager.create_genotype(parents))
         return children
 
     @staticmethod
-    def create_genotype(parents: List[Genotype]) -> Genotype:
+    def create_genotype(parents: List[ByteGenotype]) -> ByteGenotype:
         """
         Randomly select bits of the parent Genotypes to create a new child Genotype
         :param parents: A list of all the possible parents for the child Genotype
@@ -140,11 +140,11 @@ class DiversityManager(PopulationManager):
         for i in range(len(parents[0])):
             parent = choice(parents)
             child_byte_array.append(parent[i])
-        child = Genotype(child_byte_array)
+        child = ByteGenotype(child_byte_array)
         child.mutate(MUTATION_RATE)
         return child
 
-    def _choose_genotypes_from_sorted_unique_list(self, genotypes: List[Genotype]) -> List[Genotype]:
+    def _choose_genotypes_from_sorted_unique_list(self, genotypes: List[ByteGenotype]) -> List[ByteGenotype]:
         """
         Takes in all the unique Genotypes from the population and selects some to keep
         :param genotypes: A sorted list of unique Genotypes
@@ -155,7 +155,7 @@ class DiversityManager(PopulationManager):
         bad = generate_random_population(splitting_point, len(genotypes[0])) #insert garbage Genotypes
         return good + bad
 
-    def select_next_generation(self, parents: List[Genotype], children: List[Genotype]) -> List[Genotype]:
+    def select_next_generation(self, parents: List[ByteGenotype], children: List[ByteGenotype]) -> List[ByteGenotype]:
         combined_population = parents + children
         unique_population = set(combined_population)
         # print('# unique Genotypes:', len(unique_population))
@@ -171,7 +171,7 @@ class TournamentManager(PopulationManager):
     """
     Uses tournament selection
     """
-    def produce_offspring(self, population: List[Genotype]) -> Tuple[List[Genotype], List[Genotype]]:
+    def produce_offspring(self, population: List[ByteGenotype]) -> Tuple[List[ByteGenotype], List[ByteGenotype]]:
         judged_population = self.calculate_population_fitness(population)
         parents = []
         for pair in judged_population:
@@ -179,27 +179,27 @@ class TournamentManager(PopulationManager):
         children = self.create_offspring(parents)
         return parents, children
 
-    def create_offspring(self, parents: List[Genotype]) -> List[Genotype]:
+    def create_offspring(self, parents: List[ByteGenotype]) -> List[ByteGenotype]:
         children = []
         for _ in parents:
             children.append(self.crossover_and_mutate(choice(parents), choice(parents)))
         return children
 
     @staticmethod
-    def crossover_and_mutate(parent1: Genotype, parent2: Genotype) -> Genotype:
+    def crossover_and_mutate(parent1: ByteGenotype, parent2: ByteGenotype) -> ByteGenotype:
         child_array = []
         for i in range(len(parent1)):
             parent_choice = randint(0, 1)
-            parent: Genotype
+            parent: ByteGenotype
             if parent_choice == 0:
                 parent = parent1
             else:
                 parent = parent2
             child_array.append(parent[i])
-        child = Genotype(bytearray(child_array))
+        child = ByteGenotype(bytearray(child_array))
         child.mutate(MUTATION_RATE)
         return child
 
-    def select_next_generation(self, parents: List[Genotype], children: List[Genotype]) -> List[Genotype]:
+    def select_next_generation(self, parents: List[ByteGenotype], children: List[ByteGenotype]) -> List[ByteGenotype]:
         self._newest_report = self.make_LifecycleReport(children)
         return children

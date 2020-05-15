@@ -1,7 +1,7 @@
 from enum import Enum
 from abc import ABC, abstractmethod
 
-from gp_framework.genotype import Genotype
+from gp_framework.bytegenotype import ByteGenotype
 
 
 class Phenotype(Enum):
@@ -11,7 +11,7 @@ class Phenotype(Enum):
 
 class PhenotypeConverter(ABC):
     @abstractmethod
-    def convert(self, genotype: Genotype) -> any:
+    def convert(self, genotype: ByteGenotype) -> any:
         """
         Convert the given genotype to it's corresponding phenotype corresponding
         to the arguments passed on construction
@@ -25,7 +25,7 @@ class ParametersPhenotypeConverter(PhenotypeConverter):
     def __init__(self, number_of_parameters):
         self._number_of_parameters = number_of_parameters
 
-    def convert(self, genotype: Genotype):
+    def convert(self, genotype: ByteGenotype):
         """
         Turn genome into an array of parameters between 0 and 1 to be plugged into
         some application.

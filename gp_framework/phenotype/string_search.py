@@ -1,5 +1,5 @@
 from gp_framework.phenotype.phenotype import PhenotypeConverter
-from gp_framework.genotype import Genotype
+from gp_framework.bytegenotype import ByteGenotype
 from gp_framework.exception import InvalidParameterException
 
 
@@ -7,7 +7,7 @@ class StringPhenotypeConverter(PhenotypeConverter):
     def __init__(self, str_length: int):
         self._str_length = str_length
 
-    def convert(self, genotype: Genotype):
+    def convert(self, genotype: ByteGenotype):
         """
         Convert a genotype to a string of ASCII characters
 

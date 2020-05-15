@@ -3,7 +3,7 @@ from typing import List
 import random
 import struct
 
-from gp_framework.genotype import Genotype
+from gp_framework.bytegenotype import ByteGenotype
 from gp_framework.phenotype.phenotype import PhenotypeConverter
 
 
@@ -296,7 +296,7 @@ class BlackJackTable:
 
 
 class PlayerConverter(PhenotypeConverter):
-    def convert(self, genotype: Genotype) -> Player:
+    def convert(self, genotype: ByteGenotype) -> Player:
         """
         Turn genome into an array of parameters between 0 and 1 to be plugged into
         some application.
