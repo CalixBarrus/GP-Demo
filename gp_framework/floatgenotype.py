@@ -6,11 +6,7 @@ import numpy as np
 class FloatGenotype(Genotype):
     def __init__(self, floats: List[float]):
         self._floats = floats
-        hashcode = 0
-        for float_ in floats:
-            hashcode += int(100 * float_)
-        hashcode /= 10
-        self._hashcode = hashcode
+        self._hashcode = None
 
     def _mutate_floats(self, mutation_factor: float) -> List[float]:
         return [f + np.random.uniform(-mutation_factor, mutation_factor, 1)[0] for f in self._floats]
@@ -36,6 +32,8 @@ class FloatGenotype(Genotype):
         return not self.__eq__(other)
 
     def __hash__(self):
+        if self._hashcode is None:
+            self._hashcode = int(sum(self._floats) * 10)
         return self._hashcode
 
     @staticmethod
