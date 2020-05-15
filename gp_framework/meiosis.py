@@ -3,9 +3,9 @@ Meiosis is mixing bits of DNA from parents
 """
 import math
 
-from gp_framework.population_manager import PopulationManager, ByteGenotype
+from gp_framework.population_manager import PopulationManager
 from gp_framework.fitness_calculator import StringPhenotypeConverter, FitnessCalculator
-from gp_framework.bytegenotype import generate_random_population
+from gp_framework.bytegenotype import ByteGenotype
 from random import choice, randint
 from typing import List, Tuple
 
@@ -152,7 +152,7 @@ class DiversityManager(PopulationManager):
         splitting_point = math.floor(self._M/2)
         good = [genotypes[i] for i in range(self._M - splitting_point)]
         # bad = [genotypes[i] for i in range(-1, -splitting_point-1, -1)]
-        bad = generate_random_population(splitting_point, len(genotypes[0])) #insert garbage Genotypes
+        bad = ByteGenotype.generate_random_population(splitting_point, len(genotypes[0])) #insert garbage Genotypes
         return good + bad
 
     def select_next_generation(self, parents: List[ByteGenotype], children: List[ByteGenotype]) -> List[ByteGenotype]:

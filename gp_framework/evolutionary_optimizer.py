@@ -32,7 +32,7 @@ class EvolutionaryOptimizer:
     def run_many_lifecycles(self, max_iterations) -> Dict[str, List[LifecycleReport]]:
         manager_name_to_reports = {}
         for manager in self._managers:
-            manager_name_to_reports[manager.name] = EvolutionaryOptimizer._run_lifecycles(manager, max_iterations)
+            manager_name_to_reports[manager.name] = self._run_lifecycles(manager, max_iterations)
 
         return manager_name_to_reports
 

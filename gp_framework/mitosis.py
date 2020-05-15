@@ -3,7 +3,7 @@ Mitosis is splitting DNA strands and mutating them
 """
 from operator import itemgetter
 from gp_framework.population_manager import *
-from gp_framework.bytegenotype import generate_random_population
+from gp_framework.bytegenotype import ByteGenotype
 
 
 class SimpleManager(PopulationManager):
@@ -52,7 +52,7 @@ class BruteForce(PopulationManager):
         self._best_fitness = -1
 
     def produce_offspring(self, population: List[ByteGenotype]) -> Tuple[List[ByteGenotype], List[ByteGenotype]]:
-        children = generate_random_population(20, len(self._best_genotype))
+        children = ByteGenotype.generate_random_population(20, len(self._best_genotype))
         return [self._best_genotype], children
 
     def select_next_generation(self, parents: List[ByteGenotype], children: List[ByteGenotype]) -> List[ByteGenotype]:
