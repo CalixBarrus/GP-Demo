@@ -1,4 +1,4 @@
-from typing import List, Tuple, Collection
+from typing import List, Tuple, Collection, Set
 from abc import abstractmethod, ABC
 
 from gp_framework.fitness_calculator import FitnessCalculator
@@ -11,15 +11,26 @@ class LifecycleReport:
     """
 
     def __init__(self, max_fitness=-1.0, diversity=-1.0, solution: Genotype = None):
+        """
+        :param max_fitness: the fitness of the most fit genotype of this generation
+        :param diversity: a measure from 0.0 to 1.0 of how many unique individuals there are in the population
+        :param solution: the most fit genotype of this generation
+        """
         self._max_fitness = max_fitness
         self._diversity = diversity
         self._solution = solution
 
     def to_list(self):
+        """
+        useful for making csv files
+        """
         return [self.max_fitness, self.diversity]
 
     @staticmethod
     def header() -> List[str]:
+        """
+        useful for making csv files
+        """
         return ['max_fitness', 'diversity']
 
     @property
@@ -55,10 +66,20 @@ class PopulationManager(ABC):
         # this should be set in produce_offspring or select_next_generation and is returned by lifecycle
         self._newest_report: LifecycleReport = LifecycleReport()
         self._name = name
+        self._best_genotypes: Set[Genotype] = set()
+        self._best_genotype_fitness = -1
 
     @property
     def name(self) -> str:
         return self._name
+
+    @property
+    def best_genotypes(self):
+        return self._best_genotypes
+
+    @property
+    def best_genotype_fitness(self):
+        return self._best_genotype_fitness
 
     def make_LifecycleReport(self, genotypes: Collection[Genotype]) -> LifecycleReport:
         max_fitness = -1
@@ -117,4 +138,12 @@ class PopulationManager(ABC):
 
         parents, children = self.produce_offspring(self._population)
         self._population = self.select_next_generation(parents, children)
+
+        # update
+        if self._newest_report.max_fitness > self._best_genotype_fitness:
+            self._best_genotype_fitness = self._newest_report.max_fitness
+            self._best_genotypes = {self._newest_report.solution}
+        elif self._newest_report.max_fitness == self._best_genotype_fitness:
+            self._best_genotypes.add(self._newest_report.solution)
+
         return self._newest_report
