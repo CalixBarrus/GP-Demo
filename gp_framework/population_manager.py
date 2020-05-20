@@ -68,13 +68,15 @@ class PopulationManager(ABC):
         self._name = name
         self._best_genotypes: Set[Genotype] = set()
         self._best_genotype_fitness = -1
+        # Reduces computation time by storing all previously calculated fitnesses. Gets reset every lifecycle
+        self._genotype_to_fitness = {}
 
     @property
     def name(self) -> str:
         return self._name
 
     @property
-    def best_genotypes(self):
+    def best_genotypes(self) -> Set[Genotype]:
         return self._best_genotypes
 
     @property
@@ -86,7 +88,7 @@ class PopulationManager(ABC):
         fittest_genotype = None
 
         for genotype in genotypes:
-            fitness = self._fitness_calculator.calculate_fitness(genotype)
+            fitness = self._calculate_genotype_fitness(genotype)
             if fitness > max_fitness:
                 max_fitness = fitness
                 fittest_genotype = genotype
@@ -105,10 +107,15 @@ class PopulationManager(ABC):
         judged_population: List[Tuple[Genotype, float]] = []
 
         for genotype in population:
-            fitness = self._fitness_calculator.calculate_normalized_fitness(genotype)
+            fitness = self._calculate_genotype_fitness(genotype)
             judged_population.append((genotype, fitness))
 
         return judged_population
+
+    def _calculate_genotype_fitness(self, genotype: Genotype) -> int:
+        if genotype not in self._genotype_to_fitness:
+            self._genotype_to_fitness[genotype] = self._fitness_calculator.calculate_fitness(genotype)
+        return self._genotype_to_fitness[genotype]
 
     @abstractmethod
     def produce_offspring(self, population: List[Genotype]) -> Tuple[List[Genotype], List[Genotype]]:
@@ -136,10 +143,11 @@ class PopulationManager(ABC):
         :return: a summary of important findings
         """
 
+        self._genotype_to_fitness = {}  # reset every generation
         parents, children = self.produce_offspring(self._population)
         self._population = self.select_next_generation(parents, children)
 
-        # update
+        # update stored solution
         if self._newest_report.max_fitness > self._best_genotype_fitness:
             self._best_genotype_fitness = self._newest_report.max_fitness
             self._best_genotypes = {self._newest_report.solution}
